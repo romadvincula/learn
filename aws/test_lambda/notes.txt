@@ -1,0 +1,13 @@
+- build image 
+docker build -t test-model .
+
+- run image on port 8080, automatically remove volumes with --rm
+docker run -it --rm -p 8080:8080 test-model:latest
+
+- test the lambda function
+python test.py
+
+- create lambda function in aws
+
+- create api gateway in aws
+
