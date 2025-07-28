@@ -1,0 +1,25 @@
+
+Installation Instructions:
+https://www.sundog-education.com/spark-python/
+
+
+Important Spark setup notes
+In the next lecture, we'll walk through getting your development environment set up for Apache Spark 4. The video will cover everything, but there are a few points to emphasize to ensure you have a smooth experience:
+
+DO NOT install the latest Java version (24 or newer) if you need to install a JDK on your system.
+
+Apache Spark 4 is only compatible with Java 17 or 21.
+
+Furthermore, Spark is not compatible with Python 3.12 or newer as of this writing. The next video will walk you through this, but it's an important step that's easy to miss. Before running pyspark in the next lecture, you must create and activate a Python 3.10 environment, like this:
+
+conda create -n py310 python=3.10
+conda activate py310
+pip install py4j
+conda install pandas
+conda install pyarrow
+
+That must be run from your Anaconda prompt, after installing Anaconda - not from a standard Windows command prompt. The setup lecture will illustrate this. Python environments allow you to create a self-contained set of packages and their dependencies, and it's always good practice to work within one.
+
+Remember to activate your py310 environment (using "conda activate py310") prior to running any code in the course.
+
+With those details out of the way, let's go get Spark set up on your own PC!
