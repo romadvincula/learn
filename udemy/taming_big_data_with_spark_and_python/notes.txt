@@ -1,0 +1,252 @@
+--- 1. Getting Started with Spark ---
+
+- run spark script, must be in SparkCourse directory
+- use anaconda prompt then activate py310 env
+
+spark-submit ratings-counter.py
+
+- RDD = resilient distributed dataset, basically just a dataset
+
+- Spark Context, makes RDDs resilient and distributed, creates RDDs
+- Use sc to create RDDs from files, s3, json, compressed files, etc
+
+- RDD Transforms, using:
+    - map = transform based on a function, operates per row, 1 to 1 relationship
+    - flatmap = similar to map but could shrink or blowout results depending on the input
+    - filter = filter out rows based on a criteria such as return only those with "error" in a log files
+    - distinct = similar to sql distinct
+    - sample = get a smaller size of the dataset to experiment on
+    - union, intersection, subtract, cartesian operations between 2 RDDs
+
+- RDD methods accept function as a parameter (could be lambda function)
+
+- RDD Actions, get result or summarize the RDD you transformed:
+    - collect = print the values in the RDD now
+    - count = count RDD rows
+    - countByValue = get count of how many times each value occured
+    - take
+    - top
+    - reduce = write a function that combines all different values by key and summarize them
+    - reduceByKey = combine values with same key using some function
+    - groupByKey = group values with same key
+    - sortByKey = sort rdd by key values
+    - key(), values() = create rdd of just keys or just values
+    - and more...
+
+- RDDs are executed lazily, DAGs are created for operations to do and nothing happens until an Action is called
+
+- With key/value data, use mapValues() and flatMapValues if transform doesn't affect keys for efficiency
+- as maintains partitioning of original RDD and avoids shuffling data around,
+
+
+
+--- 2. Working with Structured Data - SparkSQL and Dataframes ---
+
+- SparkSQL extends RDD to a DataFrame object
+    - contains row objects
+    - can run sql queries
+    - can have a schema (thus more efficient storage)
+    - read and write to json, hive, parquet, csv, etc
+    - communicates with jdbc/odbc, tableau
+
+- Dataframes methods are available that are similar to SQL queries:
+    - df.show()
+    - df.select("someFieldName")
+    - df.filter(df("someFieldName" > 200) )
+    - df.groupBy(df("someFieldName")).mean()
+    - df.rdd().map(mapperFunction) -> converts dataframe to rdd allowing you to do more things with it
+
+- User-defined Functions - write your own function to manipulate or transform data
+
+Ex.
+from pyspark.sql.types import IntergerType
+
+def square(x):
+    return x*x
+
+spark.udf.register("square", square, IntegerType())
+df = spark.sql("SELECT square('someNumericField') FROM tableName)
+
+- Use Dataframes for structured data and use RDDs for unstructured data
+- You could use them interchangeably
+
+- withColumn() add new column to the dataframe
+
+- to create a Spark session with a local cluster and utilize all cpu cores
+- use master("local[*]"), ex:
+
+spark = SparkSession.builder.appName("myapp").master("local[*]").getOrCreate()
+
+- Pandas/Spark Integration allows you to move Dataframes between Pandas and Spark
+- Scales up for big data while allowing Pandas-style operations on Spark Dataframes
+
+
+--- Pandas / Spark Intergration ---
+
+- Convert Pandas df to Spark
+
+df = spark.createDataFrame(pandas_df)
+
+- Convert back to Pandas
+
+pandas_df = df.toPandas()
+
+- Note: does not scale as pandas_df is still in memory and back and forth
+- convertion incurs resources
+
+- Instead use pyspark.pandas as ps 
+- which exposes the Pandas API within Spark
+- also allows to reuse your existing code written in pandas on spark
+
+- Create pandas-on-spark df from a pandas df
+- allows pandas style syntax within spark
+
+ps_df = ps.Dataframe(pandas_df)
+
+- To convert to a normal spark df use
+
+ps_df.to_spark()
+
+- To convert from Spark df to pandas-on-spark df (for scalable data loading)
+
+df.pandas_api()
+
+- P-o-S allows to use pandas transform() (same length as input) and
+- apply() (could be different length from input) in a distributed manner
+
+- For batch processing, use transform _batch() and apply_batch for groupby transformations 
+- which applies functions to entire df or groups within it at once
+
+
+--- User Defined Table Functions (UDTF) ---
+
+- Recall UDF which allow row-by-row custom logic to be applied in SparkSQL or df
+- operates one row at a time, where each row must be serialized/deserialized
+- 1 to 1 input output ratio
+
+- User-Defined Table Functions (UDTF) allow 1 to many output, like exploding
+- or flattening a row input to many outputs, useful for transforming nested data
+- such as arrays, json, etc
+- for flattening nested event data from json event logs (kafka, etc.)
+- or extracting multiple rows per input row
+- or use UDTFs instead of explode() for faster and more efficient processing
+
+
+
+--- 3. Advanced Examples of Spark Programs ---
+
+- Caching saves dataframes or datasets in memory to be able to quickly and efficiently retrieve it
+- anytime you perform more than 1 action on a df or dataset, cache it or else it will be revaluated all over again
+- cache() is saved only in memory
+- persist() optionally lets you save it in disk as well in case a node fails
+
+--- 4. Running Spark on a Cluster ---
+
+--- Spark Connect ---
+
+- Client/Server architecture for Spark, Spark Connect API (dataframes only)
+- Spark Driver is remote and centralized
+- Clients are thin and lightweight: python/go/R scripts, IDEs or notebooks, stand-alone apps
+- Clients send logical parse plans via gRPC / protobuf
+- Results are streamed from server to clients via gRPC / Apache Arrow
+- Advantages:
+    - apps are isolated and less likely to bring down your entire spark server
+    - apps require less memory and start faster, speeding up developement and prototyping
+    - easier to upgrade Spark version (just upgrade the server, not the clients/apps)
+    - easier to debug apps that aren't wound into Spark itself
+    - centralizing Spark saves on resources, less Spark Driver duplication
+    - executers are better utilized (as they can run multiple client apps)
+    - however, really heavy duty apps might still be better off with stand-alone Spark server
+
+--- Amazon ElasticMapReduce (EMR) ---
+
+- sets up a default spark configuration for you on top of a hadoop's YARN cluster manager which
+manages all the resources in the background
+
+- spark also has a built-in standalone cluster manager and scripts to set up its own ec2-based cluster
+    - but the AWS consile is even easier
+
+- Spark on EMR can be expensive, unlike MapReduce with MRJob, it is using m3.xlarge instances
+- Shutdown your cluster when you're done
+
+- Setting up EMR
+    - log in to your AWS account
+    - create an ec2 key pair and download the .pem file
+
+- Partitioning - optimizing for running on a cluster
+    - need to think about how your data is partitioned
+    - Spark doesn't distribute data on its own, self join is expensive
+    - Use .partitionBy() on an RDD before running a large operation that benefits from partitioning
+    - the ff operations will preserve your partitioning in their results too:
+        - Join(), cogroup(), groupWith(), join(), leftOuterJoin(), rightOuterJoin(), groupByKey(),
+        reduceByKey(), combinedByKey(), and lookup()
+
+- choosing the right partition size
+    - too few underutilizes your cluster
+    - too many results too much overhead from shuffling data too much, breaks data up in too small chunks
+    - at least as many partitions as you have cores, or executors that fit within your available memory
+    - partitionBy(100) is usually a reasonable place to start for large operations
+
+- Specifying Memory per Executor
+    - just use an empty, default SparkConf in your driver - this way, we'll use the defaults
+    EMR sets up instead, as well as any command-line options you pass into spark-submit from
+    from your master node
+    - in our example, the default executor memory budget of 512 mb is insufficient for
+    processing one million movie ratings. to address this use:
+        spark-submit --executor-memory 1g MovieSimilarities1M.py 260 (from the master node of our cluster)
+        
+        note: whether we actually need to change --executor-memory will depend on the version of Spark
+        and the hardware we choose. We might get lucky and not need to do this.
+
+    other arguments:
+    - tells spark to run on a yarn cluster (emr sets this up by default)
+    --master yarn
+
+- running on a cluster
+    - get your scripts, data somplace where EMR can access them easily, ex. s3, use s3n:// URL's
+    when specifying file paths and make sure your file permissions make them accessible
+    - spin up an EMR cluster for SPark using the aws console
+    - get external dns name for the master node, and log into it using the "hadoop" user account
+    and your private key file
+    - copy your driver program and any files it needs, ex using aws s3:
+    aws s3 cp s3://bucket/sundog-spark/movies.dat ./
+    aws s3 cp s3://bucket/sundog-spark/MovieSimilarities1M.py ./
+
+    - to save data and script from local dir to s3 use:
+    aws s3 cp ./SparkCourse/ml-1m/movies.dat s3://bucket/sundog-spark/movies.dat
+    aws s3 cp ./SparkCourse/MovieSimilarities1M.py s3://bucket/sundog-spark/MovieSimilarities1M.py
+
+    - run spark-submit and watch the output
+    - terminate your cluster when done!
+    
+--- Troubleshooting Spark on a Cluster --- 
+
+- Troubleshooting Spark Jobs - Logs
+    - In stand-alone mode, logs are found in the web union
+    - In YARN, the logs are distributed, need to collect them after the fact using:
+    yarn logs -applicationID <app ID>
+
+    - While driver scripts run, it will log errors like executors failing to issue heartbeats
+        - generally means you are asking too much of each executor 
+        and may need more of them. i.e. more machines in your cluster
+        - or each executor may need more memory (out of memory error or OOM)
+        - or use partitionBy() to demand less work from individual executors by using smaller partitions
+
+- Managing dependencies
+    - remember your executors aren't necessarily on the same box as your driver script
+        - ex: different java env, scala env, python env
+    
+    - avoid using obscure python packages
+
+    - to include packages that aren't preloaded on EMR:
+
+
+    - if you use external libraries, you need to make sure they are available to your executors
+    - use --py-files to specify a zip file with your dependencies that are on the master, ex:
+    spark-submit --py-files my-dependencies.zip MovieSimilarities1M.py
+
+    - for data, fix absolute file paths that were used in your local dev system
+        - ex: use a distributed file system that each node has access to. 
+    
+    - Consider using broadcast variables to share data outside of RDDs
+

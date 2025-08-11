@@ -1,4 +1,8 @@
 .DS_Store
 /venv/
 /env/
-notes.txt
+mynotes.txt
+
+.ipynb_checkpoints/
+
+*.pem

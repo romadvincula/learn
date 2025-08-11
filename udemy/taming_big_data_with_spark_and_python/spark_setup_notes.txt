@@ -23,3 +23,16 @@ That must be run from your Anaconda prompt, after installing Anaconda - not from
 Remember to activate your py310 environment (using "conda activate py310") prior to running any code in the course.
 
 With those details out of the way, let's go get Spark set up on your own PC!
+
+----- Install and running on Jupyter Notebook
+
+pip install Jupyter
+
+conda install findspark
+
+or 
+
+conda install -c conda-forge findspark
+
+---- Install Spark Connect
+
