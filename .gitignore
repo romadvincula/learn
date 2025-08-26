@@ -6,3 +6,4 @@ mynotes.txt
 .ipynb_checkpoints/
 
 *.pem
+*.db

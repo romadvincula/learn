@@ -164,7 +164,7 @@ df.pandas_api()
 manages all the resources in the background
 
 - spark also has a built-in standalone cluster manager and scripts to set up its own ec2-based cluster
-    - but the AWS consile is even easier
+    - but the AWS console is even easier
 
 - Spark on EMR can be expensive, unlike MapReduce with MRJob, it is using m3.xlarge instances
 - Shutdown your cluster when you're done
@@ -205,7 +205,7 @@ manages all the resources in the background
 - running on a cluster
     - get your scripts, data somplace where EMR can access them easily, ex. s3, use s3n:// URL's
     when specifying file paths and make sure your file permissions make them accessible
-    - spin up an EMR cluster for SPark using the aws console
+    - spin up an EMR cluster for Spark using the aws console
     - get external dns name for the master node, and log into it using the "hadoop" user account
     and your private key file
     - copy your driver program and any files it needs, ex using aws s3:
@@ -213,8 +213,8 @@ manages all the resources in the background
     aws s3 cp s3://bucket/sundog-spark/MovieSimilarities1M.py ./
 
     - to save data and script from local dir to s3 use:
-    aws s3 cp ./SparkCourse/ml-1m/movies.dat s3://bucket/sundog-spark/movies.dat
-    aws s3 cp ./SparkCourse/MovieSimilarities1M.py s3://bucket/sundog-spark/MovieSimilarities1M.py
+    aws s3 cp ./SparkCourse/ml-1m/movies.dat s3://yourbucket/sundog-spark/movies.dat
+    aws s3 cp ./SparkCourse/MovieSimilarities1M.py s3://yourbucket/sundog-spark/MovieSimilarities1M.py
 
     - run spark-submit and watch the output
     - terminate your cluster when done!
@@ -222,7 +222,7 @@ manages all the resources in the background
 --- Troubleshooting Spark on a Cluster --- 
 
 - Troubleshooting Spark Jobs - Logs
-    - In stand-alone mode, logs are found in the web union
+    - In stand-alone mode, logs are found in the web ui
     - In YARN, the logs are distributed, need to collect them after the fact using:
     yarn logs -applicationID <app ID>
 
@@ -239,7 +239,8 @@ manages all the resources in the background
     - avoid using obscure python packages
 
     - to include packages that aren't preloaded on EMR:
-
+        - setup a step in EMR to run pip for what you need on each worker
+        -or use --py-files with spark-submit to add individual libs on that are on the master
 
     - if you use external libraries, you need to make sure they are available to your executors
     - use --py-files to specify a zip file with your dependencies that are on the master, ex:

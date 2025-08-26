@@ -47,7 +47,7 @@ sc = SparkContext(conf = conf)
 print("\nLoading movie names...")
 nameDict = loadMovieNames()
 
-data = sc.textFile("s3n://sundog-spark/ml-1m/ratings.dat")
+data = sc.textFile("s3n://romadv-datalake1/sundog-spark/ml-1m/ratings.dat")
 
 # Map ratings to key / value pairs: user ID => movie ID, rating
 ratings = data.map(lambda l: l.split("::")).map(lambda l: (int(l[0]), (int(l[1]), float(l[2]))))
