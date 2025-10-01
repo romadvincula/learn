@@ -1,0 +1,5 @@
+https://docs.aws.amazon.com/step-functions/latest/dg/getting-started.html
+
+https://docs.aws.amazon.com/step-functions/latest/dg/concepts-amazon-states-language.html
+
+https://docs.aws.amazon.com/AmazonS3/latest/userguide/EventNotifications.html

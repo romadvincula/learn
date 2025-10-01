@@ -1,0 +1,51 @@
+copy us_sales.venue
+from 's3://labstack-0b3243e0-6729-4349-8117-b9a552-databucket-aanq7viqrf7d/tickitdb/venue_pipe.txt' 
+iam_role 'arn:aws:iam::202974130630:role/RedshiftAccessRole' 
+region 'us-west-2' csv;
+
+
+copy us_sales.venue 
+from 's3://labstack-0b3243e0-6729-4349-8117-b9a552-databucket-aanq7viqrf7d/tickitdb/venue_pipe.txt' 
+iam_role 'arn:aws:iam::202974130630:role/RedshiftAccessRole' 
+delimiter '|' 
+region 'us-west-2';
+
+
+copy us_sales.category 
+from 's3://labstack-0b3243e0-6729-4349-8117-b9a552-databucket-aanq7viqrf7d/tickitdb/category_pipe.txt' 
+iam_role 'arn:aws:iam::202974130630:role/RedshiftAccessRole'
+delimiter '|' 
+region 'us-west-2';
+
+
+copy us_sales.date 
+from 's3://labstack-0b3243e0-6729-4349-8117-b9a552-databucket-aanq7viqrf7d/tickitdb/date2008.csv' 
+iam_role 'arn:aws:iam::202974130630:role/RedshiftAccessRole'
+region 'us-west-2' csv;
+
+
+copy us_sales.event 
+from 's3://labstack-0b3243e0-6729-4349-8117-b9a552-databucket-aanq7viqrf7d/tickitdb/allevents_pipe.txt' 
+iam_role 'arn:aws:iam::202974130630:role/RedshiftAccessRole' 
+delimiter '|' 
+timeformat 'YYYY-MM-DD HH:MI:SS' 
+region 'us-west-2';
+
+
+
+copy us_sales.listing 
+from 's3://labstack-0b3243e0-6729-4349-8117-b9a552-databucket-aanq7viqrf7d/tickitdb/listings_pipe.txt' 
+iam_role 'arn:aws:iam::202974130630:role/RedshiftAccessRole' 
+delimiter '|' 
+region 'us-west-2';
+
+
+copy us_sales.sales 
+from 's3://labstack-0b3243e0-6729-4349-8117-b9a552-databucket-aanq7viqrf7d/tickitdb/sales_tab.txt' 
+iam_role 'arn:aws:iam::202974130630:role/RedshiftAccessRole' 
+delimiter '\t' 
+timeformat 'MM/DD/YYYY HH:MI:SS' 
+region 'us-west-2';
+
+
+
