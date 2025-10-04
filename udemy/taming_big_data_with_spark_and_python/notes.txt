@@ -114,7 +114,7 @@ df.pandas_api()
 - P-o-S allows to use pandas transform() (same length as input) and
 - apply() (could be different length from input) in a distributed manner
 
-- For batch processing, use transform _batch() and apply_batch for groupby transformations 
+- For batch processing, use transform_batch() and apply_batch for groupby transformations 
 - which applies functions to entire df or groups within it at once
 
 
@@ -208,7 +208,7 @@ manages all the resources in the background
     - spin up an EMR cluster for Spark using the aws console
     - get external dns name for the master node, and log into it using the "hadoop" user account
     and your private key file
-    - copy your driver program and any files it needs, ex using aws s3:
+    - copy your driver program and any files it needs, ex copying from s3:
     aws s3 cp s3://bucket/sundog-spark/movies.dat ./
     aws s3 cp s3://bucket/sundog-spark/MovieSimilarities1M.py ./
 
@@ -251,3 +251,76 @@ manages all the resources in the background
     
     - Consider using broadcast variables to share data outside of RDDs
 
+
+
+
+--- Spark Streaming ---
+
+- Windowing - an operation that looks back over some period of time, ex:
+    - tumbling windows: consider only events that happened in the past 10 mins,
+    10 minutes would be the windows
+
+    - sliding window: similar to tumbling windows but with an added slide interval
+    that defines how often we evaluate a window
+
+    - ex of 10 min window with 5 min slide:
+
+    dataset.groupBy(
+        func.window(
+            func.col("timestampColumnName"),
+            windowDuration = "10 minutes",
+            slideDuration = "5 minutes"
+        ),
+        func.col("columnWeAreGroupingBy")
+    )
+
+- Source Format Options:
+    - Socket
+        - UTF8 data from a socket connection
+        - useful for testing only, no fault tolerance
+    - Rate
+        - also for testing, simulates data arriving at a
+        consistent rate of rows/second, optionally with
+        a "ramp up time", operates over a number of partitions
+        - also a "rate per micro-batch" source available
+    - File
+        - read files in a directory as a stream (could be in S3)
+        - processed in order of modification time, could be reversed
+        by using "latestFirst"
+        - text, csv, json, orc, parquet formats
+    - Kafka
+
+- Stream JOINS
+    - What if you have more than 1 stream to process?
+        -ex: joining orders with payment authorizations
+    - You can join based on common key like in SQL
+        - inner, left, right, outer supported
+
+    - Watermarks: used on each stream to bound how much is eligible
+    to be joined by timestamps
+        - this defines how old a given column can be before the
+        row is discarded
+    - also use time constrained queries in your join operation
+    to limit their scope
+
+- Controlling Micro-batch Size
+    - Triggers: define how much data is accumulated prior to processing
+    example are:
+
+    Fixed Intervals - process after a time window
+        - .trigger(processingTime="10 seconds")
+        - uses micro-batches, 100 ms minimum latency
+
+    Continuous processing - low latency
+        - .trigger(continuous="10 seconds")
+        - only works on supported sources & sinks (kafka) map-like ops
+        - no aggregate sql funcs, no funcs based on current time
+    
+    File sources
+        - can set max number of new files per batch as well
+        - .option("maxFilesPerTrigger",5 )
+        - or max bytes with maxBytesPerTrigger
+        - can use both together, will go with the lowest limit of the 2
+    
+    Kafka
+        - maxOffsetsPerTrigger
