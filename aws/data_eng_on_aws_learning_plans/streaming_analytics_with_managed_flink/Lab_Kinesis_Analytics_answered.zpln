@@ -1,0 +1,1185 @@
+﻿{
+  "paragraphs": [
+    {
+      "text": " %md\n### Task 4: Analytics development from Managed Apache Flink Studio\nThis is the notebook for Task 4 as noted in the lab instructions.\n*****\n\n### Note:\n### This is an instruction-only paragraph. You may find similar \"instruction-only paragraphs\" in this notebook. Instructions paragraphs need not be run.  \n### Only paragraphs with code need to be run. \n### Instruction paragraphs provide instructions that apply to code paragraphs that follow along with the expected output.\n*****\n# Task 4.1: Ingestion\nIn this task, you ingest data into Amazon Managed Apache Flink Studio from two sources:\n- From the Kinesis data stream with clickstream data (produced by the clickstream generator)\n- From the Kinesis data stream with catalog data in an Amazon Simple Storage Service (AmazonS3) bucket\n\n### Step 4.1.1 \nIn this step, you create an in-memory table in AWS Glue Data Catalog for the streaming clickstream data.\n\n### CREATE statement: \nCreates the in-memory table, **clickstream_events**,  and defines the table with its element. Apache Flink will use this statement to define the metadata for records coming into a data stream using a **Kinesis** connector.\n\n### Kinesis connector details:\nThe table uses the **Kinesis** connector to read from a Kinesis data stream called **ClickstreamDataStreamName** in the **Region** from the **latest** stream position in **JSON** format.\n*****\n### Instructions:\n1. Replace the **YOUR_ClickstreamDataStream_GOES_HERE** placeholder value within the single quotes with the **ClickstreamDataStream** found in the left panel of the lab instructions.\n2. Replace the **YOUR_Region_GOES_HERE** placeholder value within the single quote with the **Region** found in the left panel of the lab instructions.\n3. Run the following paragraph either by choosing the Play button at the top right of the paragraph or by pressing Shift + Enter keys with the paragraph selected.\n\n*****\n### Expected output:\nYou will notice the table deleted and re-created as the output.\n`It can take 1-2 minutes for the table to be created.`",
+      "user": "anonymous",
+      "dateUpdated": "2025-10-06T00:13:34+0000",
+      "progress": 0,
+      "config": {
+        "tableHide": false,
+        "editorSetting": {
+          "language": "markdown",
+          "editOnDblClick": true,
+          "completionKey": "TAB",
+          "completionSupport": false
+        },
+        "colWidth": 12,
+        "editorMode": "ace/mode/markdown",
+        "fontSize": 9,
+        "editorHide": true,
+        "results": {},
+        "enabled": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "HTML",
+            "data": "<div class=\"markdown-body\">\n<h3>Task 4: Analytics development from Managed Apache Flink Studio</h3>\n<p>This is the notebook for Task 4 as noted in the lab instructions.</p>\n<hr />\n<h3>Note</h3>\n<h3>This is an instruction-only paragraph. You may find similar &ldquo;instruction-only paragraphs&rdquo; in this notebook. Instructions paragraphs need not be run.</h3>\n<h3>Only paragraphs with code need to be run.</h3>\n<h3>Instruction paragraphs provide instructions that apply to code paragraphs that follow along with the expected output.</h3>\n<hr />\n<h1>Task 4.1: Ingestion</h1>\n<p>In this task, you ingest data into Amazon Managed Apache Flink Studio from two sources:</p>\n<ul>\n<li>From the Kinesis data stream with clickstream data (produced by the clickstream generator)</li>\n<li>From the Kinesis data stream with catalog data in an Amazon Simple Storage Service (AmazonS3) bucket</li>\n</ul>\n<h3>Step 4.1.1</h3>\n<p>In this step, you create an in-memory table in AWS Glue Data Catalog for the streaming clickstream data.</p>\n<h3>CREATE statement:</h3>\n<p>Creates the in-memory table, <strong>clickstream_events</strong>,  and defines the table with its element. Apache Flink will use this statement to define the metadata for records coming into a data stream using a <strong>Kinesis</strong> connector.</p>\n<h3>Kinesis connector details:</h3>\n<p>The table uses the <strong>Kinesis</strong> connector to read from a Kinesis data stream called <strong>ClickstreamDataStreamName</strong> in the <strong>Region</strong> from the <strong>latest</strong> stream position in <strong>JSON</strong> format.</p>\n<hr />\n<h3>Instructions:</h3>\n<ol>\n<li>Replace the <strong>YOUR_ClickstreamDataStream_GOES_HERE</strong> placeholder value within the single quotes with the <strong>ClickstreamDataStream</strong> found in the left panel of the lab instructions.</li>\n<li>Replace the <strong>YOUR_Region_GOES_HERE</strong> placeholder value within the single quote with the <strong>Region</strong> found in the left panel of the lab instructions.</li>\n<li>Run the following paragraph either by choosing the Play button at the top right of the paragraph or by pressing Shift + Enter keys with the paragraph selected.</li>\n</ol>\n<hr />\n<h3>Expected output:</h3>\n<p>You will notice the table deleted and re-created as the output.<br />\n<code>It can take 1-2 minutes for the table to be created.</code></p>\n\n</div>"
+          }
+        ]
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1759709614634_743832129",
+      "id": "paragraph_1661796835147_1029496031",
+      "dateCreated": "2025-10-06T00:13:34+0000",
+      "status": "READY",
+      "focus": true,
+      "$$hashKey": "object:166"
+    },
+    {
+      "text": "%flink.ssql\n\n-- Replace the YOUR_ClickstreamDataStream_GOES_HERE placeholder value within the single quote with the ClickstreamDataStream found in the left panel of lab instructions.\n-- Replace the YOUR_Region_GOES_HERE placeholder value within the single quote with the Region found in the left panel of lab instructions.\n\nDROP TABLE IF EXISTS clickstream_events;\nCREATE TABLE clickstream_events (\n    event_id STRING,\n    event STRING,\n    user_id STRING,\n    item_id STRING,\n    item_quantity BIGINT,\n    event_time TIMESTAMP(3),\n    os STRING,\n    page STRING,\n    url STRING\n  )\nWITH (\n    'connector' = 'kinesis',\n    'stream' = 'LabStack-b97128e3-2cd9-4702-9fa2-6f1e298f1e6e-8tT48je9QM5MYdfNTMYG6T-0-ClickstreamDataStream-FjpRmn4ZAVZQ',\n    'aws.region' = 'us-west-2',\n    'scan.stream.initpos' = 'LATEST',\n    'format' = 'json'\n);",
+      "user": "anonymous",
+      "dateUpdated": "2025-10-06T00:15:10+0000",
+      "progress": 0,
+      "config": {
+        "lineNumbers": true,
+        "editorSetting": {
+          "language": "sql",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "colWidth": 12,
+        "editorMode": "ace/mode/sql",
+        "fontSize": 9,
+        "results": {},
+        "enabled": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1759709614636_1869348108",
+      "id": "paragraph_1661796868134_484983635",
+      "dateCreated": "2025-10-06T00:13:34+0000",
+      "status": "FINISHED",
+      "$$hashKey": "object:167",
+      "dateFinished": "2025-10-06T00:15:51+0000",
+      "dateStarted": "2025-10-06T00:15:10+0000",
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "Table has been dropped.\nTable has been created.\n"
+          }
+        ]
+      }
+    },
+    {
+      "text": "%md\n### Step 4.1.2\n### SELECT query:\nRetrieves all data from the **clickstream_events** table.\n\n*****\n### Instructions:\n1.Run the next paragraph either by choosing the Play button at the top right of the following paragraph or by pressing Shift + Enter keys with the paragraph selected.\n2. `Stop the following paragraph by choosing the Pause button at the top right of the paragraph or by choosing Ctrl + Option + C (CONTROL + Alt + C in Windows) with the paragraph selected when you have seen the results to optimize Apache Flink resource allocation.`\n\n*****\n### Expected output:\n A table of the simulated clickstream data.\n`It can take 1-2 minutes for the query to return the output.`\n",
+      "user": "anonymous",
+      "dateUpdated": "2025-10-06T00:13:34+0000",
+      "progress": 0,
+      "config": {
+        "tableHide": false,
+        "editorSetting": {
+          "language": "markdown",
+          "editOnDblClick": true,
+          "completionKey": "TAB",
+          "completionSupport": false
+        },
+        "colWidth": 12,
+        "editorMode": "ace/mode/markdown",
+        "fontSize": 9,
+        "editorHide": true,
+        "results": {},
+        "enabled": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "HTML",
+            "data": "<div class=\"markdown-body\">\n<h3>Step 4.1.2</h3>\n<h3>SELECT query:</h3>\n<p>Retrieves all data from the <strong>clickstream_events</strong> table.</p>\n<hr />\n<h3>Instructions:</h3>\n<p>1.Run the next paragraph either by choosing the Play button at the top right of the following paragraph or by pressing Shift + Enter keys with the paragraph selected.<br />\n2. <code>Stop the following paragraph by choosing the Pause button at the top right of the paragraph or by choosing Ctrl + Option + C (CONTROL + Alt + C in Windows) with the paragraph selected when you have seen the results to optimize Apache Flink resource allocation.</code></p>\n<hr />\n<h3>Expected output:</h3>\n<p>A table of the simulated clickstream data.<br />\n<code>It can take 1-2 minutes for the query to return the output.</code></p>\n\n</div>"
+          }
+        ]
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1759709614636_1191773724",
+      "id": "paragraph_1661796918733_260438838",
+      "dateCreated": "2025-10-06T00:13:34+0000",
+      "status": "READY",
+      "$$hashKey": "object:168"
+    },
+    {
+      "text": "%flink.ssql(type=update)\nSELECT * FROM clickstream_events;",
+      "user": "anonymous",
+      "dateUpdated": "2025-10-06T00:15:55+0000",
+      "progress": 0,
+      "config": {
+        "lineNumbers": true,
+        "editorSetting": {
+          "language": "sql",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "colWidth": 12,
+        "editorMode": "ace/mode/sql",
+        "fontSize": 9,
+        "results": {},
+        "enabled": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "runtimeInfos": {
+        "jobUrl": {
+          "propertyName": "jobUrl",
+          "label": "FLINK JOB",
+          "tooltip": "View in Flink web UI",
+          "group": "flink",
+          "values": [
+            {
+              "jobUrl": "/flinkdashboard/#/job/5906c4c742be38e1097520e673ecc439",
+              "$$hashKey": "object:5821"
+            }
+          ],
+          "interpreterSettingId": "flink"
+        }
+      },
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1759709614636_869685538",
+      "id": "paragraph_1661796944026_1522153662",
+      "dateCreated": "2025-10-06T00:13:34+0000",
+      "status": "ABORT",
+      "$$hashKey": "object:169",
+      "dateFinished": "2025-10-06T00:17:08+0000",
+      "dateStarted": "2025-10-06T00:15:55+0000",
+      "results": {
+        "code": "ERROR",
+        "msg": [
+          {
+            "type": "TABLE",
+            "data": "event_id\tevent\tuser_id\titem_id\titem_quantity\tevent_time\tos\tpage\turl\n014c7c2751b775369ac8756107fc0afd\treviewed_item\t47\t33\t0\t2025-10-06T00:16:45.578073\tios\telectronics\twww.example.com\n062ae5ebc56277f5584221303dcd56f4\tpurchased_item\t30\t51\t5\t2025-10-06T00:16:46.597342\tweb\tapparel\twww.example.com\n07c2d9c1fb8fbd04d9332ba9bbb2b908\tliked_item\t3\t53\t0\t2025-10-06T00:17:01.902667\tandroid\tbooks\twww.example.com\n08121bef2b8112fa47d1c4683b69d080\tpurchased_item\t40\t51\t2\t2025-10-06T00:16:52.714866\tweb\thome\twww.example.com\n0837c7e4d51133495e6eddcee9d8e427\tclicked_review\t30\t22\t0\t2025-10-06T00:16:53.748439\tios\tbooks\twww.example.com\n094d9fe8fc049c6f2687e2a78c957a87\tliked_item\t45\t31\t0\t2025-10-06T00:16:50.696891\tweb\thome\twww.example.com\n09d143adce8d04ca88f166b3a8493b4e\treviewed_item\t46\t51\t0\t2025-10-06T00:16:34.286172\tandroid\tbooks\twww.example.com\n0ea11beb1ab32d5b421c123e22153b37\tliked_item\t33\t53\t0\t2025-10-06T00:16:50.687805\tios\thome\twww.example.com\n0eb7eeb98a88bafe6db5e418c4b1e698\tclicked_review\t22\t32\t0\t2025-10-06T00:16:52.736317\tandroid\tfood\twww.example.com\n106b628ebb58795062e5b67ede808244\tliked_item\t20\t23\t0\t2025-10-06T00:16:43.503432\tandroid\tapparel\twww.example.com\n278ee104579c3c2086407d68af2570e4\tclicked_review\t48\t22\t0\t2025-10-06T00:16:29.190989\tios\thome\twww.example.com\n2bfaebe8d7852de26e4d04589daaa78a\treviewed_item\t26\t21\t0\t2025-10-06T00:16:31.250966\tios\tbooks\twww.example.com\n2c152ee276a8d83552dc3505712b0ed6\tclicked_review\t33\t41\t0\t2025-10-06T00:16:55.780453\tios\telectronics\twww.example.com\n2f0ce4a84ab07a65a7cbbaf002de3971\tpurchased_item\t44\t12\t4\t2025-10-06T00:16:51.706359\tios\tapparel\twww.example.com\n2f56c6fde0ef861badbc45c54a1ddd49\tclicked_review\t19\t53\t0\t2025-10-06T00:16:33.273796\tandroid\tfood\twww.example.com\n32cb038f997d8ac8db63d844440914eb\tentered_payment_method\t9\t13\t0\t2025-10-06T00:16:47.607149\tios\tapparel\twww.example.com\n3471649d5253d8e53b1cef2a4abc6ce8\tclicked_item_description\t50\t31\t0\t2025-10-06T00:16:43.522453\tandroid\tbooks\twww.example.com\n394258c7b99ffb8641b6d3d73adcd088\tclicked_item_description\t45\t53\t0\t2025-10-06T00:16:43.533428\tweb\tapparel\twww.example.com\n39a74be2226e9582ecca3b1afd63bde7\tclicked_item_description\t50\t13\t0\t2025-10-06T00:16:49.668602\tweb\thome\twww.example.com\n3d920bc6a3b6b6b6eaf8ca71117225ac\tpurchased_item\t28\t11\t1\t2025-10-06T00:17:00.891164\tweb\thome\twww.example.com\n3e00ca152807014f396c837a58d05719\tpurchased_item\t6\t43\t5\t2025-10-06T00:16:35.330100\tweb\tbooks\twww.example.com\n3f3076b7af8beca6ac36765cfe99b26b\tentered_payment_method\t30\t53\t0\t2025-10-06T00:16:49.657614\tios\telectronics\twww.example.com\n407ecb1d972a035dfbf60ad22e077a3b\tpurchased_item\t24\t12\t3\t2025-10-06T00:16:43.513137\tios\thome\twww.example.com\n41751a95cf81288640c8c396305ff2d1\tliked_item\t40\t33\t0\t2025-10-06T00:16:36.344176\tandroid\tapparel\twww.example.com\n42e507d5a18ee5e5cf8143a0c5f2d843\tpurchased_item\t32\t53\t2\t2025-10-06T00:16:41.446700\tweb\tapparel\twww.example.com\n4508d850ea410227f4646a4fa9d85316\tclicked_review\t47\t22\t0\t2025-10-06T00:16:34.297360\tweb\telectronics\twww.example.com\n4a7facfd56e408bbe235a16933d4bc8b\tclicked_review\t32\t12\t0\t2025-10-06T00:16:38.391077\tweb\tfood\twww.example.com\n50b0811114d3cc0b2a6e4cddf675c1d4\tpurchased_item\t15\t11\t1\t2025-10-06T00:16:37.367451\tios\telectronics\twww.example.com\n51144a43925de666adb0358bd1d02a67\treviewed_item\t42\t23\t0\t2025-10-06T00:16:30.201621\tios\tfood\twww.example.com\n51443ba68e0d78ffbdb5e9c2f2169c12\treviewed_item\t11\t13\t0\t2025-10-06T00:16:54.758393\tandroid\thome\twww.example.com\n52f03d836fe6481c04c618f76432c239\treviewed_item\t2\t41\t0\t2025-10-06T00:16:32.259206\tandroid\tfood\twww.example.com\n56165fe1d02c976efa390ab66228257d\tclicked_item_description\t34\t22\t0\t2025-10-06T00:16:48.617912\tios\tfood\twww.example.com\n56c4a6b85e09a0c8dc9c8f08ca897481\tpurchased_item\t39\t53\t4\t2025-10-06T00:17:00.880346\tios\tbooks\twww.example.com\n66e596b166baac4da7557ec2713ce7d8\tpurchased_item\t39\t23\t5\t2025-10-06T00:17:00.869279\tandroid\tapparel\twww.example.com\n6afd49cda2be22325f8ad127fa9a6339\treviewed_item\t33\t51\t0\t2025-10-06T00:17:04.947043\tandroid\tbooks\twww.example.com\n6b80b3c962202031676f1c8e6d0bf336\tclicked_review\t38\t32\t0\t2025-10-06T00:16:31.241485\tios\thome\twww.example.com\n6c7d3da90d186a57da99a7d3d5b45ec7\tentered_payment_method\t15\t41\t0\t2025-10-06T00:16:57.802102\tandroid\thome\twww.example.com\n6d7b4ff06c7e466cedff9ad917a96e61\tclicked_review\t21\t32\t0\t2025-10-06T00:16:35.319692\tios\telectronics\twww.example.com\n709994b251bbb53bec29427882a47099\tliked_item\t9\t53\t0\t2025-10-06T00:17:03.927910\tios\tfood\twww.example.com\n7400a12a9d3f2c7a99fef137f7c0b401\treviewed_item\t20\t33\t0\t2025-10-06T00:16:57.811635\tweb\thome\twww.example.com\n7aed1f8696da6ea1f750d632bb54533c\tclicked_review\t10\t43\t0\t2025-10-06T00:16:48.626719\tandroid\tbooks\twww.example.com\n8012126886fd64e0d6f7ee59828b1105\tliked_item\t37\t13\t0\t2025-10-06T00:16:39.403614\tios\tapparel\twww.example.com\n85851e2dc34805bb15a415337d244aaf\tentered_payment_method\t10\t31\t0\t2025-10-06T00:16:35.306919\tios\tfood\twww.example.com\n863013ccd1e4920fcb6ee717b5d98c88\tclicked_review\t45\t13\t0\t2025-10-06T00:16:44.559062\tandroid\thome\twww.example.com\n86cddca65502e7de5bba2e55574b4faa\treviewed_item\t45\t52\t0\t2025-10-06T00:16:59.845870\tandroid\tbooks\twww.example.com\n8c733ed45c05356840762d18fc1ff3ac\tclicked_item_description\t14\t33\t0\t2025-10-06T00:16:58.823305\tweb\thome\twww.example.com\n8f3c12eb11957b0bd423bb3059802041\tclicked_review\t24\t32\t0\t2025-10-06T00:16:43.493820\tios\tfood\twww.example.com\n8f4333df89fa172b144fb487e9390e61\treviewed_item\t19\t31\t0\t2025-10-06T00:16:56.791372\tandroid\thome\twww.example.com\n93b4196084c64e0870e9932b51201a4a\tclicked_item_description\t33\t33\t0\t2025-10-06T00:16:40.426751\tweb\tapparel\twww.example.com\n976bc7e175704940028cd7a0c0eca947\tclicked_review\t4\t42\t0\t2025-10-06T00:16:49.677630\tandroid\tfood\twww.example.com\n9df145ddd38e01eb92d26893b1505e58\treviewed_item\t28\t51\t0\t2025-10-06T00:16:46.586539\tandroid\tapparel\twww.example.com\n9eda7481822fc106291ef31596a56b40\tclicked_review\t19\t23\t0\t2025-10-06T00:16:59.836764\tios\tapparel\twww.example.com\na1e5f3f8ed2903b55c11da7b62d2c514\treviewed_item\t31\t31\t0\t2025-10-06T00:17:05.958121\tandroid\tfood\twww.example.com\na484dd97ba3fc69ac25d84b0094a73ad\tclicked_review\t29\t52\t0\t2025-10-06T00:16:48.648283\tandroid\tbooks\twww.example.com\nafbba01c27a5732764accfe0aba06759\tclicked_review\t8\t13\t0\t2025-10-06T00:16:30.221343\tios\tapparel\twww.example.com\nb976e43c9aa5808dbea9536051f9cf48\tclicked_review\t48\t53\t0\t2025-10-06T00:16:48.638167\tandroid\tbooks\twww.example.com\nbd420fec86ec0c2f44848e9e791a524b\tliked_item\t7\t42\t0\t2025-10-06T00:16:29.170541\tweb\tapparel\twww.example.com\nbd5f745cf3389dda0efba4be3be2ce4e\tliked_item\t44\t23\t0\t2025-10-06T00:16:42.470348\tios\telectronics\twww.example.com\nc0364b344c168daa1c5412900d14e145\tclicked_review\t37\t32\t0\t2025-10-06T00:16:42.457406\tandroid\tbooks\twww.example.com\nc2966c76ef9bd3ccca6e4fd9e5b0180a\treviewed_item\t7\t23\t0\t2025-10-06T00:16:44.545449\tios\tbooks\twww.example.com\nc2c354f909654b12539e0180d71ec8e6\tpurchased_item\t48\t33\t5\t2025-10-06T00:16:52.725363\tweb\thome\twww.example.com\nc5ee5c3a2ad70590627a23c617665d1a\tclicked_review\t27\t53\t0\t2025-10-06T00:16:55.768620\tandroid\thome\twww.example.com\nd06244a7321ad229aaedf1136f9bd051\tentered_payment_method\t40\t51\t0\t2025-10-06T00:16:40.436474\tandroid\telectronics\twww.example.com\nd11c9460346c2da6149b0d8063991b1f\treviewed_item\t46\t52\t0\t2025-10-06T00:16:30.211405\tandroid\tapparel\twww.example.com\nd5dec177a7fe5195943c6ad16a527a24\tentered_payment_method\t16\t51\t0\t2025-10-06T00:16:42.480792\tweb\thome\twww.example.com\nda784ff6168ade9c4f95c5014346f540\tliked_item\t21\t51\t0\t2025-10-06T00:17:04.937431\tweb\tfood\twww.example.com\nddfe42330e1ab216210ca94686deba0d\tpurchased_item\t16\t53\t5\t2025-10-06T00:16:29.182185\tweb\tbooks\twww.example.com\ne085fe3b77d0a59e563da6be09a0eed5\tclicked_review\t12\t32\t0\t2025-10-06T00:16:37.355927\tweb\tfood\twww.example.com\ne1622a61f1964b93d94323b65bdb773b\treviewed_item\t20\t13\t0\t2025-10-06T00:16:39.414048\tios\thome\twww.example.com\nec5a03e7c8fc2a5b99cd5a00cab9e627\tliked_item\t38\t23\t0\t2025-10-06T00:16:30.230676\tios\tbooks\twww.example.com\nf7b47b0daf55eae8e3f122e553918bea\tpurchased_item\t12\t33\t2\t2025-10-06T00:17:02.915196\tios\tapparel\twww.example.com\nf8706b9d97d875e51860ca3fe45e4dc8\tpurchased_item\t41\t41\t2\t2025-10-06T00:16:28.156001\tios\thome\twww.example.com\nfc17095053ea3553357e4fdeaeb519f6\tclicked_review\t40\t43\t0\t2025-10-06T00:16:37.379515\tios\telectronics\twww.example.com\nfc448cdd078e55734ba7de84a361efa0\tclicked_item_description\t16\t31\t0\t2025-10-06T00:16:45.569484\tweb\tapparel\twww.example.com\nfefd5365c2c712c9777c590e63b44ff9\tliked_item\t46\t22\t0\t2025-10-06T00:17:00.857308\tweb\thome\twww.example.com\n"
+          },
+          {
+            "type": "TEXT",
+            "data": "Fail to run sql command: SELECT * FROM clickstream_events\n"
+          },
+          {
+            "type": "ANGULAR",
+            "data": "<div class='container ng-scope' style='padding-left:0px;padding-right:0px;'>\n    <div class='panel panel-danger'>\n        <div class='panel-heading' ng-click='isOpen=!isOpen' ng-init='isOpen=false' style=\"cursor:pointer\">\n            <div class='plainTextContainer' style='font-weight:bolder'><i class=\"fa fa-caret-right fa-fw\" style=\"padding-right:7px;transition:all 0.3s;{{isOpen?'transform:rotate(90deg);transform-origin:25% 45%':''}}\"></i>Job was cancelled.</div>\n        </div>\n        <div class='panel-collapse' uib-collapse='!isOpen'>\n            <div class='text' style='max-height:300px;overflow:auto;padding:10px'>java.io.IOException: Fail to run stream sql job\n\tat org.apache.zeppelin.flink.sql.AbstractStreamSqlJob.run(AbstractStreamSqlJob.java:172)\n\tat org.apache.zeppelin.flink.sql.AbstractStreamSqlJob.run(AbstractStreamSqlJob.java:105)\n\tat org.apache.zeppelin.flink.FlinkStreamSqlInterpreter.callInnerSelect(FlinkStreamSqlInterpreter.java:89)\n\tat org.apache.zeppelin.flink.FlinkSqlInterrpeter.callSelect(FlinkSqlInterrpeter.java:503)\n\tat org.apache.zeppelin.flink.FlinkSqlInterrpeter.callCommand(FlinkSqlInterrpeter.java:266)\n\tat org.apache.zeppelin.flink.FlinkSqlInterrpeter.runSqlList(FlinkSqlInterrpeter.java:160)\n\tat org.apache.zeppelin.flink.FlinkSqlInterrpeter.internalInterpret(FlinkSqlInterrpeter.java:112)\n\tat org.apache.zeppelin.interpreter.AbstractInterpreter.interpret(AbstractInterpreter.java:47)\n\tat org.apache.zeppelin.interpreter.LazyOpenInterpreter.interpret(LazyOpenInterpreter.java:110)\n\tat org.apache.zeppelin.interpreter.remote.RemoteInterpreterServer$InterpretJob.jobRun(RemoteInterpreterServer.java:852)\n\tat org.apache.zeppelin.interpreter.remote.RemoteInterpreterServer$InterpretJob.jobRun(RemoteInterpreterServer.java:744)\n\tat org.apache.zeppelin.scheduler.Job.run(Job.java:172)\n\tat org.apache.zeppelin.scheduler.AbstractScheduler.runJob(AbstractScheduler.java:132)\n\tat org.apache.zeppelin.scheduler.ParallelScheduler.lambda$runJobInScheduler$0(ParallelScheduler.java:46)\n\tat java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1128)\n\tat java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:628)\n\tat java.base/java.lang.Thread.run(Thread.java:829)\nCaused by: org.apache.flink.client.program.ProgramInvocationException: Job failed (JobID: 5906c4c742be38e1097520e673ecc439)\n\tat org.apache.flink.client.deployment.ClusterClientJobClientAdapter.lambda$getJobExecutionResult$6(ClusterClientJobClientAdapter.java:125)\n\tat java.base/java.util.concurrent.CompletableFuture$UniApply.tryFire(CompletableFuture.java:642)\n\tat java.base/java.util.concurrent.CompletableFuture.postComplete(CompletableFuture.java:506)\n\tat java.base/java.util.concurrent.CompletableFuture.complete(CompletableFuture.java:2079)\n\tat org.apache.flink.runtime.concurrent.FutureUtils.lambda$retryOperationWithDelay$9(FutureUtils.java:394)\n\tat java.base/java.util.concurrent.CompletableFuture.uniWhenComplete(CompletableFuture.java:859)\n\tat java.base/java.util.concurrent.CompletableFuture$UniWhenComplete.tryFire(CompletableFuture.java:837)\n\tat java.base/java.util.concurrent.CompletableFuture.postComplete(CompletableFuture.java:506)\n\tat java.base/java.util.concurrent.CompletableFuture.complete(CompletableFuture.java:2079)\n\tat org.apache.flink.client.program.rest.RestClusterClient.lambda$pollResourceAsync$24(RestClusterClient.java:670)\n\tat java.base/java.util.concurrent.CompletableFuture.uniWhenComplete(CompletableFuture.java:859)\n\tat java.base/java.util.concurrent.CompletableFuture$UniWhenComplete.tryFire(CompletableFuture.java:837)\n\tat java.base/java.util.concurrent.CompletableFuture.postComplete(CompletableFuture.java:506)\n\tat java.base/java.util.concurrent.CompletableFuture.complete(CompletableFuture.java:2079)\n\tat org.apache.flink.runtime.concurrent.FutureUtils.lambda$retryOperationWithDelay$9(FutureUtils.java:394)\n\tat java.base/java.util.concurrent.CompletableFuture.uniWhenComplete(CompletableFuture.java:859)\n\tat java.base/java.util.concurrent.CompletableFuture$UniWhenComplete.tryFire(CompletableFuture.java:837)\n\tat java.base/java.util.concurrent.CompletableFuture.postComplete(CompletableFuture.java:506)\n\tat java.base/java.util.concurrent.CompletableFuture.postFire(CompletableFuture.java:610)\n\tat java.base/java.util.concurrent.CompletableFuture$UniCompose.tryFire(CompletableFuture.java:1085)\n\tat java.base/java.util.concurrent.CompletableFuture$Completion.run(CompletableFuture.java:478)\n\t... 3 more\nCaused by: org.apache.flink.runtime.client.JobCancellationException: Job was cancelled.\n\tat org.apache.flink.runtime.jobmaster.JobResult.toJobExecutionResult(JobResult.java:146)\n\tat org.apache.flink.client.deployment.ClusterClientJobClientAdapter.lambda$getJobExecutionResult$6(ClusterClientJobClientAdapter.java:123)\n\t... 23 more\n</div>\n        </div>\n    </div>\n</div>\n"
+          }
+        ]
+      }
+    },
+    {
+      "text": "%md\nNow you proceed to ingest the catalog data that is stored in Amazon S3.  This is a three-step process.\nIn the first step (step 4.1.3), you create and define an in-memory table to read the catalog data from Amazon S3.\nIn the second step (step 4.1.4), you create and define an in-memory table for the Kinesis data stream that will ingest the catalog data.\nIn the third step (step 4.1.5), you insert the data into the Kinesis data stream.\n",
+      "user": "anonymous",
+      "dateUpdated": "2025-10-06T00:13:34+0000",
+      "progress": 0,
+      "config": {
+        "tableHide": false,
+        "editorSetting": {
+          "language": "markdown",
+          "editOnDblClick": true,
+          "completionKey": "TAB",
+          "completionSupport": false
+        },
+        "colWidth": 12,
+        "editorMode": "ace/mode/markdown",
+        "fontSize": 9,
+        "editorHide": true,
+        "results": {},
+        "enabled": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "HTML",
+            "data": "<div class=\"markdown-body\">\n<p>Now you proceed to ingest the catalog data that is stored in Amazon S3.  This is a three-step process.<br />\nIn the first step (step 4.1.3), you create and define an in-memory table to read the catalog data from Amazon S3.<br />\nIn the second step (step 4.1.4), you create and define an in-memory table for the Kinesis data stream that will ingest the catalog data.<br />\nIn the third step (step 4.1.5), you insert the data into the Kinesis data stream.</p>\n\n</div>"
+          }
+        ]
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1759709614636_56988150",
+      "id": "paragraph_1661796984005_311233047",
+      "dateCreated": "2025-10-06T00:13:34+0000",
+      "status": "READY",
+      "$$hashKey": "object:170"
+    },
+    {
+      "text": "%md\n###  Step 4.1.3\n\nIn this step, you create an in-memory table in AWS Glue Data Catalog for the item catalog in Amazon S3.\n\n### CREATE statement: \nCreates an in-memory **catalog_items_s3** table  and defines the table with its element. Apache Flink will use this statement to define the metadata for the JSON file stored in Amazon S3 using the **filesystem** connector.\n\n### Filesystem connector details: \nThe table uses the **filesystem** connector to read from an S3 bucket path in **JSON** format.\n*****\n### Instructions:\n\n1. Check the previous code block to ensure that it has been stopped. \n2. Replace the **YOUR_DataBucketName_GOES_HERE** placeholder value with the **DataBucketName** found in the left panel of the lab instructions.\n3. Run the following paragraph either by choosing the Play button at the top right of the paragraph or by pressing Shift + Enter keys with the paragraph selected.\n\n*****\n### Expected output:\nYou will notice the table deleted and re-created as the output.\n",
+      "user": "anonymous",
+      "dateUpdated": "2025-10-06T00:13:34+0000",
+      "progress": 0,
+      "config": {
+        "tableHide": false,
+        "editorSetting": {
+          "language": "markdown",
+          "editOnDblClick": true,
+          "completionKey": "TAB",
+          "completionSupport": false
+        },
+        "colWidth": 12,
+        "editorMode": "ace/mode/markdown",
+        "fontSize": 9,
+        "editorHide": true,
+        "results": {},
+        "enabled": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "HTML",
+            "data": "<div class=\"markdown-body\">\n<h3>Step 4.1.3</h3>\n<p>In this step, you create an in-memory table in AWS Glue Data Catalog for the item catalog in Amazon S3.</p>\n<h3>CREATE statement:</h3>\n<p>Creates an in-memory <strong>catalog_items_s3</strong> table  and defines the table with its element. Apache Flink will use this statement to define the metadata for the JSON file stored in Amazon S3 using the <strong>filesystem</strong> connector.</p>\n<h3>Filesystem connector details:</h3>\n<p>The table uses the <strong>filesystem</strong> connector to read from an S3 bucket path in <strong>JSON</strong> format.</p>\n<hr />\n<h3>Instructions:</h3>\n<ol>\n<li>Check the previous code block to ensure that it has been stopped.</li>\n<li>Replace the <strong>YOUR_DataBucketName_GOES_HERE</strong> placeholder value with the <strong>DataBucketName</strong> found in the left panel of the lab instructions.</li>\n<li>Run the following paragraph either by choosing the Play button at the top right of the paragraph or by pressing Shift + Enter keys with the paragraph selected.</li>\n</ol>\n<hr />\n<h3>Expected output:</h3>\n<p>You will notice the table deleted and re-created as the output.</p>\n\n</div>"
+          }
+        ]
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1759709614637_1570447122",
+      "id": "paragraph_1661797034355_1921830170",
+      "dateCreated": "2025-10-06T00:13:34+0000",
+      "status": "READY",
+      "$$hashKey": "object:171"
+    },
+    {
+      "text": "%flink.ssql(type=update)\n\n-- Replace the YOUR_DataBucketName_GOES_HERE placeholder value with the DataBucketName found in the left panel of lab instructions.\n\nDROP TABLE IF EXISTS catalog_items_s3;\nCREATE TABLE catalog_items_s3(\n     item_id STRING,\n    item_name STRING,\n    item_price STRING,\n    page STRING\n  )\nWITH (\n    'connector' = 'filesystem',\n    'path' = 's3://databucket-us-west-2-540501218/input/',\n    'format' = 'json'\n);",
+      "user": "anonymous",
+      "dateUpdated": "2025-10-06T00:18:00+0000",
+      "progress": 0,
+      "config": {
+        "lineNumbers": true,
+        "editorSetting": {
+          "language": "sql",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "colWidth": 12,
+        "editorMode": "ace/mode/sql",
+        "fontSize": 9,
+        "results": {},
+        "enabled": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1759709614637_774800472",
+      "id": "paragraph_1661797047627_222413333",
+      "dateCreated": "2025-10-06T00:13:34+0000",
+      "status": "FINISHED",
+      "$$hashKey": "object:172",
+      "dateFinished": "2025-10-06T00:18:02+0000",
+      "dateStarted": "2025-10-06T00:18:00+0000",
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "Table has been dropped.\nTable has been created.\n"
+          }
+        ]
+      }
+    },
+    {
+      "text": "%md\n### Step 4.1.4 \nIn this step, you create an in-memory table in AWS Glue Data Catalog for the Kinesis data stream that will ingest the catalog data that is available in an S3 bucket.\n\n### CREATE statement: \nCreates the **catalog_items_stream** in-memory table and defines the table with its element. Apache Flink will use this statement to define the metadata for records coming into a data stream using a **kinesis** connector.\n### Kinesis connector details:\nThe table uses the **Kinesis** connector to read from a Kinesis data stream called **ItemDataStream** in the **Region** Region from the **TRIM_HORIZON** stream position in **JSON** format.\n\n*****\n### Instructions:\n\n1. Replace the **YOUR_ItemDataStream_GOES_HERE** placeholder value within the single quotes with the **ItemDataStream** found in the left panel of the lab instructions.\n2. Replace the **YOUR_Region_GOES_HERE** placeholder value within the single quote with the **Region** found in the left panel of the lab instructions.\n3. Run the following paragraph either by choosing the Play button at the top right of the paragraph or by pressing Shift + Enter keys with the paragraph selected.\n\n*****\n### Expected output:\nYou will notice the table deleted and re-created as the output.\n",
+      "user": "anonymous",
+      "dateUpdated": "2025-10-06T00:13:34+0000",
+      "progress": 0,
+      "config": {
+        "tableHide": false,
+        "editorSetting": {
+          "language": "markdown",
+          "editOnDblClick": true,
+          "completionKey": "TAB",
+          "completionSupport": false
+        },
+        "colWidth": 12,
+        "editorMode": "ace/mode/markdown",
+        "fontSize": 9,
+        "editorHide": true,
+        "results": {},
+        "enabled": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "HTML",
+            "data": "<div class=\"markdown-body\">\n<h3>Step 4.1.4</h3>\n<p>In this step, you create an in-memory table in AWS Glue Data Catalog for the Kinesis data stream that will ingest the catalog data that is available in an S3 bucket.</p>\n<h3>CREATE statement:</h3>\n<p>Creates the <strong>catalog_items_stream</strong> in-memory table and defines the table with its element. Apache Flink will use this statement to define the metadata for records coming into a data stream using a <strong>kinesis</strong> connector.</p>\n<h3>Kinesis connector details:</h3>\n<p>The table uses the <strong>Kinesis</strong> connector to read from a Kinesis data stream called <strong>ItemDataStream</strong> in the <strong>Region</strong> Region from the <strong>TRIM_HORIZON</strong> stream position in <strong>JSON</strong> format.</p>\n<hr />\n<h3>Instructions:</h3>\n<ol>\n<li>Replace the <strong>YOUR_ItemDataStream_GOES_HERE</strong> placeholder value within the single quotes with the <strong>ItemDataStream</strong> found in the left panel of the lab instructions.</li>\n<li>Replace the <strong>YOUR_Region_GOES_HERE</strong> placeholder value within the single quote with the <strong>Region</strong> found in the left panel of the lab instructions.</li>\n<li>Run the following paragraph either by choosing the Play button at the top right of the paragraph or by pressing Shift + Enter keys with the paragraph selected.</li>\n</ol>\n<hr />\n<h3>Expected output:</h3>\n<p>You will notice the table deleted and re-created as the output.</p>\n\n</div>"
+          }
+        ]
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1759709614637_1446539189",
+      "id": "paragraph_1661797273385_468932827",
+      "dateCreated": "2025-10-06T00:13:34+0000",
+      "status": "READY",
+      "$$hashKey": "object:173"
+    },
+    {
+      "text": "%flink.ssql(type=update)\n\n-- Replace the `YOUR_ItemDataStream_GOES_HERE` placeholder value within the single quote with the `ItemDataStream` found in the left panel of lab instructions.\n-- Replace the `YOUR_Region_GOES_HERE` placeholder value within the single quote with the `Region` found in the left panel of lab instructions.\n\nDROP TABLE IF EXISTS catalog_items_stream;\nCREATE TABLE catalog_items_stream (\n    item_id STRING,\n    item_name STRING,\n    item_price STRING,\n    page STRING\n  )\nWITH (\n    'connector' = 'kinesis',\n    'stream' = 'LabStack-b97128e3-2cd9-4702-9fa2-6f1e298f1e6e-8tT48je9QM5MYdfNTMYG6T-0-UserDataStream-8681fZwtgVcC',\n    'aws.region' = 'us-west-2',\n    'scan.stream.initpos' = 'TRIM_HORIZON',\n    'format' = 'json'\n);",
+      "user": "anonymous",
+      "dateUpdated": "2025-10-06T00:20:24+0000",
+      "progress": 0,
+      "config": {
+        "lineNumbers": true,
+        "editorSetting": {
+          "language": "sql",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "colWidth": 12,
+        "editorMode": "ace/mode/sql",
+        "fontSize": 9,
+        "results": {},
+        "enabled": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1759709614637_792784111",
+      "id": "paragraph_1661797120747_991292231",
+      "dateCreated": "2025-10-06T00:13:34+0000",
+      "status": "FINISHED",
+      "$$hashKey": "object:174",
+      "dateFinished": "2025-10-06T00:20:26+0000",
+      "dateStarted": "2025-10-06T00:20:25+0000",
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "Table has been dropped.\nTable has been created.\n"
+          }
+        ]
+      }
+    },
+    {
+      "text": "%md\n### Step 4.1.5 \nYou insert catalog data into the Kinesis data stream.\n### INSERT statement: \nInserts the data records from the **catalog_items_s3** table  into the **catalog_items_stream** table.\n*****\n### Instructions:\n1. Run the following paragraph either by choosing the Play button at the top right of the paragraph or by pressing Shift + Enter keys with the paragraph selected.\n\n*****\n### Expected output:\nYou will see **Insertion successfully** returned on a successful run of the command.  There will be no results presented on the screen because this is an **INSERT** statement.\n",
+      "user": "anonymous",
+      "dateUpdated": "2025-10-06T00:13:34+0000",
+      "progress": 0,
+      "config": {
+        "tableHide": false,
+        "editorSetting": {
+          "language": "markdown",
+          "editOnDblClick": true,
+          "completionKey": "TAB",
+          "completionSupport": false
+        },
+        "colWidth": 12,
+        "editorMode": "ace/mode/markdown",
+        "fontSize": 9,
+        "editorHide": true,
+        "results": {},
+        "enabled": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "HTML",
+            "data": "<div class=\"markdown-body\">\n<h3>Step 4.1.5</h3>\n<p>You insert catalog data into the Kinesis data stream.</p>\n<h3>INSERT statement:</h3>\n<p>Inserts the data records from the <strong>catalog_items_s3</strong> table  into the <strong>catalog_items_stream</strong> table.</p>\n<hr />\n<h3>Instructions:</h3>\n<ol>\n<li>Run the following paragraph either by choosing the Play button at the top right of the paragraph or by pressing Shift + Enter keys with the paragraph selected.</li>\n</ol>\n<hr />\n<h3>Expected output:</h3>\n<p>You will see <strong>Insertion successfully</strong> returned on a successful run of the command.  There will be no results presented on the screen because this is an <strong>INSERT</strong> statement.</p>\n\n</div>"
+          }
+        ]
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1759709614637_1853307018",
+      "id": "paragraph_1661797170278_231977691",
+      "dateCreated": "2025-10-06T00:13:34+0000",
+      "status": "READY",
+      "$$hashKey": "object:175"
+    },
+    {
+      "text": "%flink.ssql(type=update)\nINSERT INTO catalog_items_stream\nSELECT item_id,\n    item_name,\n    item_price,\n    page\nFROM  catalog_items_s3;",
+      "user": "anonymous",
+      "dateUpdated": "2025-10-06T00:21:11+0000",
+      "progress": 0,
+      "config": {
+        "lineNumbers": true,
+        "editorSetting": {
+          "language": "sql",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "colWidth": 12,
+        "editorMode": "ace/mode/sql",
+        "fontSize": 9,
+        "results": {},
+        "enabled": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "runtimeInfos": {
+        "jobUrl": {
+          "propertyName": "jobUrl",
+          "label": "FLINK JOB",
+          "tooltip": "View in Flink web UI",
+          "group": "flink",
+          "values": [
+            {
+              "jobUrl": "/flinkdashboard/#/job/7a7441c4fac0166dac3e71a42a6bfe0a",
+              "$$hashKey": "object:5939"
+            }
+          ],
+          "interpreterSettingId": "flink"
+        }
+      },
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1759709614637_1539729190",
+      "id": "paragraph_1661797190658_213928073",
+      "dateCreated": "2025-10-06T00:13:34+0000",
+      "status": "FINISHED",
+      "$$hashKey": "object:176",
+      "dateFinished": "2025-10-06T00:21:37+0000",
+      "dateStarted": "2025-10-06T00:21:12+0000",
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "ANGULAR",
+            "data": "<h1>Duration: {{duration}} </h1>\n"
+          },
+          {
+            "type": "TEXT",
+            "data": "Insertion successfully.\n"
+          }
+        ]
+      }
+    },
+    {
+      "text": "%md\n### Step 4.1.6\nRetrieves the catalog data from the Kinesis data stream.\n\n### SELECT query:\nRetrieves all catalog data from the **catalog_items_stream** table.  \n\n*****\n### Instructions:\n1.  Run the following paragraph either by choosing the Play button at the top right of the paragraph or by pressing Shift + Enter keys with the paragraph selected.\n2. `Stop the following paragraph by choosing the Pause button at the top right of the paragraph or by choosing Ctrl + Option + C (Ctrl + Alt + C in Windows) with the paragraph selected when you have seen the results`.\n\n*****\n### Expected output:\nA table of the catalog items stored in Amazon S3.\n`It can take 1-2 minutes for the query to return the output.`\n",
+      "user": "anonymous",
+      "dateUpdated": "2025-10-06T00:13:34+0000",
+      "progress": 0,
+      "config": {
+        "tableHide": false,
+        "editorSetting": {
+          "language": "markdown",
+          "editOnDblClick": true,
+          "completionKey": "TAB",
+          "completionSupport": false
+        },
+        "colWidth": 12,
+        "editorMode": "ace/mode/markdown",
+        "fontSize": 9,
+        "editorHide": true,
+        "results": {},
+        "enabled": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "HTML",
+            "data": "<div class=\"markdown-body\">\n<h3>Step 4.1.6</h3>\n<p>Retrieves the catalog data from the Kinesis data stream.</p>\n<h3>SELECT query:</h3>\n<p>Retrieves all catalog data from the <strong>catalog_items_stream</strong> table.</p>\n<hr />\n<h3>Instructions:</h3>\n<ol>\n<li>Run the following paragraph either by choosing the Play button at the top right of the paragraph or by pressing Shift + Enter keys with the paragraph selected.</li>\n<li><code>Stop the following paragraph by choosing the Pause button at the top right of the paragraph or by choosing Ctrl + Option + C (Ctrl + Alt + C in Windows) with the paragraph selected when you have seen the results</code>.</li>\n</ol>\n<hr />\n<h3>Expected output:</h3>\n<p>A table of the catalog items stored in Amazon S3.<br />\n<code>It can take 1-2 minutes for the query to return the output.</code></p>\n\n</div>"
+          }
+        ]
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1759709614638_2100486072",
+      "id": "paragraph_1661797334556_972929602",
+      "dateCreated": "2025-10-06T00:13:34+0000",
+      "status": "READY",
+      "$$hashKey": "object:177"
+    },
+    {
+      "text": "%flink.ssql(type=update)\nSELECT * FROM catalog_items_stream;",
+      "user": "anonymous",
+      "dateUpdated": "2025-10-06T00:22:02+0000",
+      "progress": 0,
+      "config": {
+        "lineNumbers": true,
+        "editorSetting": {
+          "language": "sql",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "colWidth": 12,
+        "editorMode": "ace/mode/sql",
+        "fontSize": 9,
+        "results": {},
+        "enabled": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "runtimeInfos": {
+        "jobUrl": {
+          "propertyName": "jobUrl",
+          "label": "FLINK JOB",
+          "tooltip": "View in Flink web UI",
+          "group": "flink",
+          "values": [
+            {
+              "jobUrl": "/flinkdashboard/#/job/41e148643b002c6fa5d8e456529ae1ab",
+              "$$hashKey": "object:7380"
+            }
+          ],
+          "interpreterSettingId": "flink"
+        }
+      },
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1759709614638_1331134374",
+      "id": "paragraph_1661797363920_584648605",
+      "dateCreated": "2025-10-06T00:13:34+0000",
+      "status": "ABORT",
+      "$$hashKey": "object:178",
+      "dateFinished": "2025-10-06T00:22:52+0000",
+      "dateStarted": "2025-10-06T00:22:02+0000",
+      "results": {
+        "code": "ERROR",
+        "msg": [
+          {
+            "type": "TABLE",
+            "data": "item_id\titem_name\titem_price\tpage\n11\tShirt\t10.00\tapparel\n12\tTShirt\t5.00\tapparel\n13\tJacket\t15.00\tapparel\n21\tPasta Sauce\t8.00\tfood\n22\tCake Mix\t12.00\tfood\n23\tNoodle\t6.00\tfood\n31\tHead phone\t25.00\telectronics\n32\tKeyboard\t20.00\telectronics\n33\tMouse\t15.00\telectronics\n41\tDinner set\t30.00\thome\n42\tKettle\t15.00\thome\n43\tCutting board\t20.00\thome\n51\tData Sciences Book\t25.00\tbooks\n52\tCookbook\t15.00\tbooks\n53\tLearning Python\t30.00\tbooks\n"
+          },
+          {
+            "type": "TEXT",
+            "data": "Fail to run sql command: SELECT * FROM catalog_items_stream\n"
+          },
+          {
+            "type": "ANGULAR",
+            "data": "<div class='container ng-scope' style='padding-left:0px;padding-right:0px;'>\n    <div class='panel panel-danger'>\n        <div class='panel-heading' ng-click='isOpen=!isOpen' ng-init='isOpen=false' style=\"cursor:pointer\">\n            <div class='plainTextContainer' style='font-weight:bolder'><i class=\"fa fa-caret-right fa-fw\" style=\"padding-right:7px;transition:all 0.3s;{{isOpen?'transform:rotate(90deg);transform-origin:25% 45%':''}}\"></i>Job was cancelled.</div>\n        </div>\n        <div class='panel-collapse' uib-collapse='!isOpen'>\n            <div class='text' style='max-height:300px;overflow:auto;padding:10px'>java.io.IOException: Fail to run stream sql job\n\tat org.apache.zeppelin.flink.sql.AbstractStreamSqlJob.run(AbstractStreamSqlJob.java:172)\n\tat org.apache.zeppelin.flink.sql.AbstractStreamSqlJob.run(AbstractStreamSqlJob.java:105)\n\tat org.apache.zeppelin.flink.FlinkStreamSqlInterpreter.callInnerSelect(FlinkStreamSqlInterpreter.java:89)\n\tat org.apache.zeppelin.flink.FlinkSqlInterrpeter.callSelect(FlinkSqlInterrpeter.java:503)\n\tat org.apache.zeppelin.flink.FlinkSqlInterrpeter.callCommand(FlinkSqlInterrpeter.java:266)\n\tat org.apache.zeppelin.flink.FlinkSqlInterrpeter.runSqlList(FlinkSqlInterrpeter.java:160)\n\tat org.apache.zeppelin.flink.FlinkSqlInterrpeter.internalInterpret(FlinkSqlInterrpeter.java:112)\n\tat org.apache.zeppelin.interpreter.AbstractInterpreter.interpret(AbstractInterpreter.java:47)\n\tat org.apache.zeppelin.interpreter.LazyOpenInterpreter.interpret(LazyOpenInterpreter.java:110)\n\tat org.apache.zeppelin.interpreter.remote.RemoteInterpreterServer$InterpretJob.jobRun(RemoteInterpreterServer.java:852)\n\tat org.apache.zeppelin.interpreter.remote.RemoteInterpreterServer$InterpretJob.jobRun(RemoteInterpreterServer.java:744)\n\tat org.apache.zeppelin.scheduler.Job.run(Job.java:172)\n\tat org.apache.zeppelin.scheduler.AbstractScheduler.runJob(AbstractScheduler.java:132)\n\tat org.apache.zeppelin.scheduler.ParallelScheduler.lambda$runJobInScheduler$0(ParallelScheduler.java:46)\n\tat java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1128)\n\tat java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:628)\n\tat java.base/java.lang.Thread.run(Thread.java:829)\nCaused by: org.apache.flink.client.program.ProgramInvocationException: Job failed (JobID: 41e148643b002c6fa5d8e456529ae1ab)\n\tat org.apache.flink.client.deployment.ClusterClientJobClientAdapter.lambda$getJobExecutionResult$6(ClusterClientJobClientAdapter.java:125)\n\tat java.base/java.util.concurrent.CompletableFuture$UniApply.tryFire(CompletableFuture.java:642)\n\tat java.base/java.util.concurrent.CompletableFuture.postComplete(CompletableFuture.java:506)\n\tat java.base/java.util.concurrent.CompletableFuture.complete(CompletableFuture.java:2079)\n\tat org.apache.flink.runtime.concurrent.FutureUtils.lambda$retryOperationWithDelay$9(FutureUtils.java:394)\n\tat java.base/java.util.concurrent.CompletableFuture.uniWhenComplete(CompletableFuture.java:859)\n\tat java.base/java.util.concurrent.CompletableFuture$UniWhenComplete.tryFire(CompletableFuture.java:837)\n\tat java.base/java.util.concurrent.CompletableFuture.postComplete(CompletableFuture.java:506)\n\tat java.base/java.util.concurrent.CompletableFuture.complete(CompletableFuture.java:2079)\n\tat org.apache.flink.client.program.rest.RestClusterClient.lambda$pollResourceAsync$24(RestClusterClient.java:670)\n\tat java.base/java.util.concurrent.CompletableFuture.uniWhenComplete(CompletableFuture.java:859)\n\tat java.base/java.util.concurrent.CompletableFuture$UniWhenComplete.tryFire(CompletableFuture.java:837)\n\tat java.base/java.util.concurrent.CompletableFuture.postComplete(CompletableFuture.java:506)\n\tat java.base/java.util.concurrent.CompletableFuture.complete(CompletableFuture.java:2079)\n\tat org.apache.flink.runtime.concurrent.FutureUtils.lambda$retryOperationWithDelay$9(FutureUtils.java:394)\n\tat java.base/java.util.concurrent.CompletableFuture.uniWhenComplete(CompletableFuture.java:859)\n\tat java.base/java.util.concurrent.CompletableFuture$UniWhenComplete.tryFire(CompletableFuture.java:837)\n\tat java.base/java.util.concurrent.CompletableFuture.postComplete(CompletableFuture.java:506)\n\tat java.base/java.util.concurrent.CompletableFuture.postFire(CompletableFuture.java:610)\n\tat java.base/java.util.concurrent.CompletableFuture$UniCompose.tryFire(CompletableFuture.java:1085)\n\tat java.base/java.util.concurrent.CompletableFuture$Completion.run(CompletableFuture.java:478)\n\t... 3 more\nCaused by: org.apache.flink.runtime.client.JobCancellationException: Job was cancelled.\n\tat org.apache.flink.runtime.jobmaster.JobResult.toJobExecutionResult(JobResult.java:146)\n\tat org.apache.flink.client.deployment.ClusterClientJobClientAdapter.lambda$getJobExecutionResult$6(ClusterClientJobClientAdapter.java:123)\n\t... 23 more\n</div>\n        </div>\n    </div>\n</div>\n"
+          }
+        ]
+      }
+    },
+    {
+      "text": "%md\n# Task 4.2: Data enrichment\nNow that you have ingested the data, you enrich the streaming clickstream data with the catalog data available in an S3 bucket.\nThis is accomplished with the **JOIN** statement.\n### JOIN statement: \nPerforms an inner join of the clickstream data and user data based on the **item_id** primary key.\n*****\n### Instructions:\n1. Check the previous code block to ensure that it has been stopped. \n2. Run the following paragraph either by choosing the Play button at the top right of the paragraph or by pressing Shift + Enter keys with the paragraph selected.\n3. `Stop the following paragraph by choosing the Pause button at the top right of the paragraph or by choosing Ctrl + Option + C (Ctrl + Alt + C in Windows) with the paragraph selected when you have seen the results`.\n\n*****\n### Expected output:\nA table of the clickstream data enriched with catalog data.\n`It can take 1-2 minutes for the query to return the output.`\n",
+      "user": "anonymous",
+      "dateUpdated": "2025-10-06T00:13:34+0000",
+      "progress": 0,
+      "config": {
+        "tableHide": false,
+        "editorSetting": {
+          "language": "markdown",
+          "editOnDblClick": true,
+          "completionKey": "TAB",
+          "completionSupport": false
+        },
+        "colWidth": 12,
+        "editorMode": "ace/mode/markdown",
+        "fontSize": 9,
+        "editorHide": true,
+        "results": {},
+        "enabled": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "HTML",
+            "data": "<div class=\"markdown-body\">\n<h1>Task 4.2: Data enrichment</h1>\n<p>Now that you have ingested the data, you enrich the streaming clickstream data with the catalog data available in an S3 bucket.<br />\nThis is accomplished with the <strong>JOIN</strong> statement.</p>\n<h3>JOIN statement:</h3>\n<p>Performs an inner join of the clickstream data and user data based on the <strong>item_id</strong> primary key.</p>\n<hr />\n<h3>Instructions:</h3>\n<ol>\n<li>Check the previous code block to ensure that it has been stopped.</li>\n<li>Run the following paragraph either by choosing the Play button at the top right of the paragraph or by pressing Shift + Enter keys with the paragraph selected.</li>\n<li><code>Stop the following paragraph by choosing the Pause button at the top right of the paragraph or by choosing Ctrl + Option + C (Ctrl + Alt + C in Windows) with the paragraph selected when you have seen the results</code>.</li>\n</ol>\n<hr />\n<h3>Expected output:</h3>\n<p>A table of the clickstream data enriched with catalog data.<br />\n<code>It can take 1-2 minutes for the query to return the output.</code></p>\n\n</div>"
+          }
+        ]
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1759709614638_891869945",
+      "id": "paragraph_1661797395104_156854109",
+      "dateCreated": "2025-10-06T00:13:34+0000",
+      "status": "READY",
+      "$$hashKey": "object:179"
+    },
+    {
+      "text": "%flink.ssql(type=update)\nSELECT  *\nfrom clickstream_events \ninner join  catalog_items_stream\non   clickstream_events.item_id = catalog_items_stream.item_id;",
+      "user": "anonymous",
+      "dateUpdated": "2025-10-06T00:23:38+0000",
+      "progress": 0,
+      "config": {
+        "lineNumbers": true,
+        "editorSetting": {
+          "language": "sql",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "colWidth": 12,
+        "editorMode": "ace/mode/sql",
+        "fontSize": 9,
+        "results": {},
+        "enabled": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "runtimeInfos": {
+        "jobUrl": {
+          "propertyName": "jobUrl",
+          "label": "FLINK JOB",
+          "tooltip": "View in Flink web UI",
+          "group": "flink",
+          "values": [
+            {
+              "jobUrl": "/flinkdashboard/#/job/5c37d3fade135f53d4d9ec8fb953537e",
+              "$$hashKey": "object:12345"
+            }
+          ],
+          "interpreterSettingId": "flink"
+        }
+      },
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1759709614638_708886446",
+      "id": "paragraph_1661797421416_1571677426",
+      "dateCreated": "2025-10-06T00:13:34+0000",
+      "status": "ABORT",
+      "$$hashKey": "object:180",
+      "dateFinished": "2025-10-06T00:24:46+0000",
+      "dateStarted": "2025-10-06T00:23:38+0000",
+      "results": {
+        "code": "ERROR",
+        "msg": [
+          {
+            "type": "TABLE",
+            "data": "event_id\tevent\tuser_id\titem_id\titem_quantity\tevent_time\tos\tpage\turl\titem_id0\titem_name\titem_price\tpage0\n05d387d4e3525a882e165b6473e9690c\tclicked_item_description\t2\t32\t0\t2025-10-06T00:24:07.498\tios\tapparel\twww.example.com\t32\tKeyboard\t20.00\telectronics\n065828f3d15a4790b6c75a134190ca21\treviewed_item\t22\t32\t0\t2025-10-06T00:24:15.675\tandroid\tfood\twww.example.com\t32\tKeyboard\t20.00\telectronics\n0b9512d9b3b840a7e33c4e36802ed276\tclicked_review\t33\t33\t0\t2025-10-06T00:24:25.855\tios\tbooks\twww.example.com\t33\tMouse\t15.00\telectronics\n0db8f4b7ba7f344e4d8b028eaee20905\tclicked_review\t1\t22\t0\t2025-10-06T00:24:35.033\tandroid\tfood\twww.example.com\t22\tCake Mix\t12.00\tfood\n0fdf40b7e4504363fdd8610a86dca8ed\tentered_payment_method\t35\t13\t0\t2025-10-06T00:24:29.940\tios\telectronics\twww.example.com\t13\tJacket\t15.00\tapparel\n116735dcc8ecfaeb8e332fec82606ab5\tentered_payment_method\t16\t22\t0\t2025-10-06T00:24:24.843\tios\telectronics\twww.example.com\t22\tCake Mix\t12.00\tfood\n172490c83ef2258c0b8c2443da7703ec\treviewed_item\t11\t31\t0\t2025-10-06T00:24:05.444\tios\thome\twww.example.com\t31\tHead phone\t25.00\telectronics\n1d8f011431e897d9749ec0aa3dbfc2de\tliked_item\t9\t42\t0\t2025-10-06T00:24:23.811\tios\tbooks\twww.example.com\t42\tKettle\t15.00\thome\n22abeef07b6473dcfc9b28c708fd4d10\tpurchased_item\t23\t41\t1\t2025-10-06T00:24:18.732\tweb\tapparel\twww.example.com\t41\tDinner set\t30.00\thome\n232b5dd732dec3e8d8fe0101e1d28af4\tclicked_item_description\t7\t32\t0\t2025-10-06T00:24:22.802\tweb\tbooks\twww.example.com\t32\tKeyboard\t20.00\telectronics\n2413ed151ecaa005c1a847711b89d16d\tclicked_review\t5\t31\t0\t2025-10-06T00:24:29.953\tandroid\telectronics\twww.example.com\t31\tHead phone\t25.00\telectronics\n2476cf4984e3ee39869e1fc2f645e25a\tclicked_item_description\t23\t13\t0\t2025-10-06T00:24:34.021\tios\tbooks\twww.example.com\t13\tJacket\t15.00\tapparel\n27b93d11fe08dfd45f88ca2200c621c3\tclicked_item_description\t19\t13\t0\t2025-10-06T00:24:15.631\tios\tbooks\twww.example.com\t13\tJacket\t15.00\tapparel\n28bc7c3b1a29602f68c0ced18c797f70\tliked_item\t34\t22\t0\t2025-10-06T00:24:06.476\tweb\telectronics\twww.example.com\t22\tCake Mix\t12.00\tfood\n2b80aaabc0cd5f14def25a9507faf23e\treviewed_item\t35\t23\t0\t2025-10-06T00:23:55.163\tandroid\tfood\twww.example.com\t23\tNoodle\t6.00\tfood\n2c9e82f292be4d8dadbd9858f3027627\tclicked_item_description\t25\t52\t0\t2025-10-06T00:24:18.741\tweb\telectronics\twww.example.com\t52\tCookbook\t15.00\tbooks\n2f922315a4475ca8f3d0abe918ff714e\tliked_item\t41\t31\t0\t2025-10-06T00:24:09.545\tios\telectronics\twww.example.com\t31\tHead phone\t25.00\telectronics\n32e8ae065966be05ca9fd8fd51824a2d\tclicked_item_description\t10\t51\t0\t2025-10-06T00:24:30.988\tweb\telectronics\twww.example.com\t51\tData Sciences Book\t25.00\tbooks\n392b417c4edc89f6670644cf8607944c\treviewed_item\t35\t12\t0\t2025-10-06T00:24:15.689\tios\tfood\twww.example.com\t12\tTShirt\t5.00\tapparel\n3f548fc53f1284d4765212a012f3b907\treviewed_item\t50\t13\t0\t2025-10-06T00:24:18.721\tweb\tbooks\twww.example.com\t13\tJacket\t15.00\tapparel\n45f777fb9c7d2af7056338be293475db\treviewed_item\t19\t33\t0\t2025-10-06T00:23:59.235\tweb\thome\twww.example.com\t33\tMouse\t15.00\telectronics\n45f9cce73d6df65551428f8c333e1775\tentered_payment_method\t38\t33\t0\t2025-10-06T00:23:55.154\tandroid\tbooks\twww.example.com\t33\tMouse\t15.00\telectronics\n4a8257d6f3a40899fd3bbba1649cc9bf\tentered_payment_method\t44\t52\t0\t2025-10-06T00:24:11.565\tandroid\tfood\twww.example.com\t52\tCookbook\t15.00\tbooks\n4b2f74aec90fa5552cef5669cf2d8d3b\tpurchased_item\t25\t53\t5\t2025-10-06T00:24:41.123\tios\telectronics\twww.example.com\t53\tLearning Python\t30.00\tbooks\n4b788197a4acf354a7e6e527a6722e46\tclicked_item_description\t45\t51\t0\t2025-10-06T00:24:04.420\tios\tbooks\twww.example.com\t51\tData Sciences Book\t25.00\tbooks\n4dfa7b7ee8571d9f556b7ad1fe5a8732\tpurchased_item\t21\t33\t3\t2025-10-06T00:24:42.148\tandroid\tfood\twww.example.com\t33\tMouse\t15.00\telectronics\n50693078ca9357222917f78e93c471c0\tpurchased_item\t26\t42\t5\t2025-10-06T00:23:59.222\tandroid\tapparel\twww.example.com\t42\tKettle\t15.00\thome\n57d36810feaa936d33180eb4846ca4c7\treviewed_item\t26\t32\t0\t2025-10-06T00:24:04.433\tweb\telectronics\twww.example.com\t32\tKeyboard\t20.00\telectronics\n5800b24835b686f40ed696c38894c38d\tentered_payment_method\t23\t41\t0\t2025-10-06T00:23:59.246\tios\tfood\twww.example.com\t41\tDinner set\t30.00\thome\n5f29264a4d2ffc699b4def8dca7749be\tpurchased_item\t12\t23\t3\t2025-10-06T00:23:57.183\tweb\thome\twww.example.com\t23\tNoodle\t6.00\tfood\n5feaa97dfb22216170b4509fda55b7b5\tliked_item\t1\t31\t0\t2025-10-06T00:24:03.401\tios\tbooks\twww.example.com\t31\tHead phone\t25.00\telectronics\n61929b79e94bbbb15fe14c64d217992c\treviewed_item\t21\t51\t0\t2025-10-06T00:24:11.587\tandroid\tapparel\twww.example.com\t51\tData Sciences Book\t25.00\tbooks\n62e0651649853a5e5ec6f3781dde1174\tclicked_item_description\t27\t21\t0\t2025-10-06T00:24:33.009\tweb\thome\twww.example.com\t21\tPasta Sauce\t8.00\tfood\n6dd82e9fd7e8bac0f2d03dbaebf7cf99\tpurchased_item\t7\t43\t3\t2025-10-06T00:24:19.754\tios\thome\twww.example.com\t43\tCutting board\t20.00\thome\n6ec1e4ed101ecc9e1925fc591ff31c44\tliked_item\t35\t12\t0\t2025-10-06T00:24:23.824\tandroid\tbooks\twww.example.com\t12\tTShirt\t5.00\tapparel\n6f5f3dab734feadebb9b6d9f1fb815f2\tclicked_item_description\t31\t52\t0\t2025-10-06T00:24:00.258\tios\tbooks\twww.example.com\t52\tCookbook\t15.00\tbooks\n740cd73917a506fa52c242286af89885\tclicked_item_description\t16\t12\t0\t2025-10-06T00:24:11.576\tandroid\thome\twww.example.com\t12\tTShirt\t5.00\tapparel\n749184021ed4e56775349ca6b107a79a\tliked_item\t14\t11\t0\t2025-10-06T00:24:02.323\tios\tbooks\twww.example.com\t11\tShirt\t10.00\tapparel\n7621800e65083864e36b6fe41a9c8741\treviewed_item\t21\t33\t0\t2025-10-06T00:24:38.072\tios\telectronics\twww.example.com\t33\tMouse\t15.00\telectronics\n774a44683ee84d74d1e416f07d70e0f6\tclicked_review\t14\t22\t0\t2025-10-06T00:24:01.270\tios\telectronics\twww.example.com\t22\tCake Mix\t12.00\tfood\n780739a2ec584c41d789682af3e68093\tpurchased_item\t4\t33\t1\t2025-10-06T00:24:21.792\tandroid\tbooks\twww.example.com\t33\tMouse\t15.00\telectronics\n791d83badebce06654f0a197c30837c3\treviewed_item\t26\t51\t0\t2025-10-06T00:24:27.907\tios\tfood\twww.example.com\t51\tData Sciences Book\t25.00\tbooks\n7cb7152267326a076a613962966438c2\tclicked_review\t19\t41\t0\t2025-10-06T00:24:03.411\tios\tapparel\twww.example.com\t41\tDinner set\t30.00\thome\n8008f9014b61c95cdaeab0a9c9700d9e\tpurchased_item\t41\t21\t2\t2025-10-06T00:24:03.391\tios\tbooks\twww.example.com\t21\tPasta Sauce\t8.00\tfood\n8afd693befb4cc876919ed73a112f435\tclicked_review\t24\t33\t0\t2025-10-06T00:24:27.898\tweb\telectronics\twww.example.com\t33\tMouse\t15.00\telectronics\n921ca0b5d16a498f53b5f3ffce0e5bd0\tentered_payment_method\t47\t23\t0\t2025-10-06T00:24:24.833\tweb\tapparel\twww.example.com\t23\tNoodle\t6.00\tfood\n92ce36d018dee4da29a83f0ba77ff8b5\tclicked_review\t33\t11\t0\t2025-10-06T00:24:20.766\tweb\tfood\twww.example.com\t11\tShirt\t10.00\tapparel\n957871a21e7a660c7fa78918fc146bf0\tliked_item\t17\t31\t0\t2025-10-06T00:24:30.977\tweb\telectronics\twww.example.com\t31\tHead phone\t25.00\telectronics\n9bb8e5bace8afa748cad9ed4fc1ed362\treviewed_item\t20\t31\t0\t2025-10-06T00:24:15.664\tweb\thome\twww.example.com\t31\tHead phone\t25.00\telectronics\n9c3fb64978bee11282e56b8f9405d83e\tpurchased_item\t10\t31\t1\t2025-10-06T00:24:02.284\tandroid\thome\twww.example.com\t31\tHead phone\t25.00\telectronics\na0b2cd3f187776fba11bf6521dd35d01\tpurchased_item\t15\t43\t2\t2025-10-06T00:24:08.522\tweb\tapparel\twww.example.com\t43\tCutting board\t20.00\thome\na17f34c859b16bb0d8bf1d89d2761567\tclicked_item_description\t9\t52\t0\t2025-10-06T00:24:31.997\tandroid\telectronics\twww.example.com\t52\tCookbook\t15.00\tbooks\na60b02c28a8bba7ff30e269251342894\tliked_item\t17\t51\t0\t2025-10-06T00:24:43.160\tios\tapparel\twww.example.com\t51\tData Sciences Book\t25.00\tbooks\na7752d9757114f91909877aa5e4d625a\tliked_item\t41\t33\t0\t2025-10-06T00:24:16.700\tandroid\thome\twww.example.com\t33\tMouse\t15.00\telectronics\na822d3c47b704e7f94f9f380455b1aba\tliked_item\t29\t13\t0\t2025-10-06T00:24:30.966\tios\telectronics\twww.example.com\t13\tJacket\t15.00\tapparel\nabd542ad188e2ed9ab425e732fc86a64\tliked_item\t24\t43\t0\t2025-10-06T00:24:26.887\tweb\tapparel\twww.example.com\t43\tCutting board\t20.00\thome\nb214e1ca16fa5ac9cab94ed7c6fc0e07\tpurchased_item\t17\t12\t2\t2025-10-06T00:24:02.377\tios\tapparel\twww.example.com\t12\tTShirt\t5.00\tapparel\nb31301ec04b58016e90f1ee768b26fca\tclicked_review\t38\t41\t0\t2025-10-06T00:24:28.929\tios\thome\twww.example.com\t41\tDinner set\t30.00\thome\nb5f13d62a4e2cd802957daeeb73c1a7d\tentered_payment_method\t1\t33\t0\t2025-10-06T00:24:14.620\tandroid\tapparel\twww.example.com\t33\tMouse\t15.00\telectronics\nb7334fd18d13e2eb6efbd467e617b7f8\tclicked_review\t39\t51\t0\t2025-10-06T00:24:25.875\tweb\tbooks\twww.example.com\t51\tData Sciences Book\t25.00\tbooks\nb8c1c854da00bec71028ed2d5e7fd0a0\treviewed_item\t4\t42\t0\t2025-10-06T00:24:05.455\tandroid\tfood\twww.example.com\t42\tKettle\t15.00\thome\nba32e348282909d577163d78a6c1f629\tclicked_review\t27\t53\t0\t2025-10-06T00:24:06.466\tweb\thome\twww.example.com\t53\tLearning Python\t30.00\tbooks\nbc1d56f1b3e4f536fb89fa4f88f3c5c8\tclicked_review\t5\t21\t0\t2025-10-06T00:24:10.556\tios\tbooks\twww.example.com\t21\tPasta Sauce\t8.00\tfood\nc07f85891d586b2e6d2a457b7d9d7ec3\tpurchased_item\t29\t52\t1\t2025-10-06T00:24:42.137\tandroid\tbooks\twww.example.com\t52\tCookbook\t15.00\tbooks\nc0faa06a5300695919756f004c0e1dfc\treviewed_item\t17\t13\t0\t2025-10-06T00:24:07.487\tandroid\telectronics\twww.example.com\t13\tJacket\t15.00\tapparel\nc16e539939f8662ded62edd15ab7dfc7\tclicked_item_description\t6\t23\t0\t2025-10-06T00:24:02.356\tandroid\tfood\twww.example.com\t23\tNoodle\t6.00\tfood\nc7ebeccc15b6ca934abbc3d616a178ee\treviewed_item\t11\t41\t0\t2025-10-06T00:23:56.172\tandroid\thome\twww.example.com\t41\tDinner set\t30.00\thome\nce9ad6b42c1d9577007b9479e98fa3fd\tliked_item\t49\t11\t0\t2025-10-06T00:24:08.512\tandroid\thome\twww.example.com\t11\tShirt\t10.00\tapparel\ncf24dc1c858b6b02ada8c5f7bb07bc68\treviewed_item\t15\t41\t0\t2025-10-06T00:24:25.865\tandroid\tbooks\twww.example.com\t41\tDinner set\t30.00\thome\nd0ab9004fbcabf13e8a0f4acf63cf59a\tliked_item\t13\t21\t0\t2025-10-06T00:24:27.917\tweb\tbooks\twww.example.com\t21\tPasta Sauce\t8.00\tfood\nd25540b305fcbdb5d33ea9264c7df045\treviewed_item\t28\t53\t0\t2025-10-06T00:24:37.059\tandroid\tapparel\twww.example.com\t53\tLearning Python\t30.00\tbooks\nda5f6ad40af988b4eef421733ae76b71\tentered_payment_method\t32\t43\t0\t2025-10-06T00:24:15.642\tandroid\tapparel\twww.example.com\t43\tCutting board\t20.00\thome\ndc64b39440396516e8e60cfc04640375\tclicked_review\t42\t52\t0\t2025-10-06T00:24:09.534\tios\tapparel\twww.example.com\t52\tCookbook\t15.00\tbooks\ndda687619d345d62aec0a8802d703bac\treviewed_item\t26\t23\t0\t2025-10-06T00:23:59.208\tandroid\tbooks\twww.example.com\t23\tNoodle\t6.00\tfood\ne081dd28bc566611eb0ce938074926e6\tclicked_review\t13\t53\t0\t2025-10-06T00:24:40.099\tandroid\tbooks\twww.example.com\t53\tLearning Python\t30.00\tbooks\ne1637787f710c235617dfbd303717596\tpurchased_item\t4\t12\t3\t2025-10-06T00:23:58.196\tios\tbooks\twww.example.com\t12\tTShirt\t5.00\tapparel\ne4c3cb90eb0a13704a201b3900bd125a\tclicked_item_description\t15\t53\t0\t2025-10-06T00:24:17.711\tandroid\telectronics\twww.example.com\t53\tLearning Python\t30.00\tbooks\ne56ca6a268bccb87a0113cc4b5346e28\tclicked_review\t9\t52\t0\t2025-10-06T00:24:13.609\tandroid\tbooks\twww.example.com\t52\tCookbook\t15.00\tbooks\ne6216fc952f499d4d05817a69b8fae1d\tliked_item\t35\t43\t0\t2025-10-06T00:24:41.110\tweb\telectronics\twww.example.com\t43\tCutting board\t20.00\thome\nebe740184cf5bdab1e59b1e61931edbd\tentered_payment_method\t16\t53\t0\t2025-10-06T00:24:12.599\tandroid\thome\twww.example.com\t53\tLearning Python\t30.00\tbooks\ned95b345ae07c416c8f2d7879e9330a5\tclicked_item_description\t5\t52\t0\t2025-10-06T00:24:15.652\tandroid\tbooks\twww.example.com\t52\tCookbook\t15.00\tbooks\nef5526d47ef483b661be736e480699fe\tentered_payment_method\t12\t32\t0\t2025-10-06T00:24:36.046\tandroid\telectronics\twww.example.com\t32\tKeyboard\t20.00\telectronics\nfc0ac442d13f516181b2d3fbd0d2c012\tpurchased_item\t9\t23\t1\t2025-10-06T00:24:02.339\tweb\thome\twww.example.com\t23\tNoodle\t6.00\tfood\nfd4a0b5a351c8b556676ad76b85bb776\tclicked_item_description\t21\t21\t0\t2025-10-06T00:24:39.087\tweb\tbooks\twww.example.com\t21\tPasta Sauce\t8.00\tfood\nfe96c9ca68bab59f2815b3cc4aadb687\tliked_item\t23\t53\t0\t2025-10-06T00:24:20.779\tandroid\telectronics\twww.example.com\t53\tLearning Python\t30.00\tbooks\n"
+          },
+          {
+            "type": "TEXT",
+            "data": "Fail to run sql command: SELECT  *\nfrom clickstream_events \ninner join  catalog_items_stream\non   clickstream_events.item_id = catalog_items_stream.item_id\n"
+          },
+          {
+            "type": "ANGULAR",
+            "data": "<div class='container ng-scope' style='padding-left:0px;padding-right:0px;'>\n    <div class='panel panel-danger'>\n        <div class='panel-heading' ng-click='isOpen=!isOpen' ng-init='isOpen=false' style=\"cursor:pointer\">\n            <div class='plainTextContainer' style='font-weight:bolder'><i class=\"fa fa-caret-right fa-fw\" style=\"padding-right:7px;transition:all 0.3s;{{isOpen?'transform:rotate(90deg);transform-origin:25% 45%':''}}\"></i>Job was cancelled.</div>\n        </div>\n        <div class='panel-collapse' uib-collapse='!isOpen'>\n            <div class='text' style='max-height:300px;overflow:auto;padding:10px'>java.io.IOException: Fail to run stream sql job\n\tat org.apache.zeppelin.flink.sql.AbstractStreamSqlJob.run(AbstractStreamSqlJob.java:172)\n\tat org.apache.zeppelin.flink.sql.AbstractStreamSqlJob.run(AbstractStreamSqlJob.java:105)\n\tat org.apache.zeppelin.flink.FlinkStreamSqlInterpreter.callInnerSelect(FlinkStreamSqlInterpreter.java:89)\n\tat org.apache.zeppelin.flink.FlinkSqlInterrpeter.callSelect(FlinkSqlInterrpeter.java:503)\n\tat org.apache.zeppelin.flink.FlinkSqlInterrpeter.callCommand(FlinkSqlInterrpeter.java:266)\n\tat org.apache.zeppelin.flink.FlinkSqlInterrpeter.runSqlList(FlinkSqlInterrpeter.java:160)\n\tat org.apache.zeppelin.flink.FlinkSqlInterrpeter.internalInterpret(FlinkSqlInterrpeter.java:112)\n\tat org.apache.zeppelin.interpreter.AbstractInterpreter.interpret(AbstractInterpreter.java:47)\n\tat org.apache.zeppelin.interpreter.LazyOpenInterpreter.interpret(LazyOpenInterpreter.java:110)\n\tat org.apache.zeppelin.interpreter.remote.RemoteInterpreterServer$InterpretJob.jobRun(RemoteInterpreterServer.java:852)\n\tat org.apache.zeppelin.interpreter.remote.RemoteInterpreterServer$InterpretJob.jobRun(RemoteInterpreterServer.java:744)\n\tat org.apache.zeppelin.scheduler.Job.run(Job.java:172)\n\tat org.apache.zeppelin.scheduler.AbstractScheduler.runJob(AbstractScheduler.java:132)\n\tat org.apache.zeppelin.scheduler.ParallelScheduler.lambda$runJobInScheduler$0(ParallelScheduler.java:46)\n\tat java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1128)\n\tat java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:628)\n\tat java.base/java.lang.Thread.run(Thread.java:829)\nCaused by: org.apache.flink.client.program.ProgramInvocationException: Job failed (JobID: 5c37d3fade135f53d4d9ec8fb953537e)\n\tat org.apache.flink.client.deployment.ClusterClientJobClientAdapter.lambda$getJobExecutionResult$6(ClusterClientJobClientAdapter.java:125)\n\tat java.base/java.util.concurrent.CompletableFuture$UniApply.tryFire(CompletableFuture.java:642)\n\tat java.base/java.util.concurrent.CompletableFuture.postComplete(CompletableFuture.java:506)\n\tat java.base/java.util.concurrent.CompletableFuture.complete(CompletableFuture.java:2079)\n\tat org.apache.flink.runtime.concurrent.FutureUtils.lambda$retryOperationWithDelay$9(FutureUtils.java:394)\n\tat java.base/java.util.concurrent.CompletableFuture.uniWhenComplete(CompletableFuture.java:859)\n\tat java.base/java.util.concurrent.CompletableFuture$UniWhenComplete.tryFire(CompletableFuture.java:837)\n\tat java.base/java.util.concurrent.CompletableFuture.postComplete(CompletableFuture.java:506)\n\tat java.base/java.util.concurrent.CompletableFuture.complete(CompletableFuture.java:2079)\n\tat org.apache.flink.client.program.rest.RestClusterClient.lambda$pollResourceAsync$24(RestClusterClient.java:670)\n\tat java.base/java.util.concurrent.CompletableFuture.uniWhenComplete(CompletableFuture.java:859)\n\tat java.base/java.util.concurrent.CompletableFuture$UniWhenComplete.tryFire(CompletableFuture.java:837)\n\tat java.base/java.util.concurrent.CompletableFuture.postComplete(CompletableFuture.java:506)\n\tat java.base/java.util.concurrent.CompletableFuture.complete(CompletableFuture.java:2079)\n\tat org.apache.flink.runtime.concurrent.FutureUtils.lambda$retryOperationWithDelay$9(FutureUtils.java:394)\n\tat java.base/java.util.concurrent.CompletableFuture.uniWhenComplete(CompletableFuture.java:859)\n\tat java.base/java.util.concurrent.CompletableFuture$UniWhenComplete.tryFire(CompletableFuture.java:837)\n\tat java.base/java.util.concurrent.CompletableFuture.postComplete(CompletableFuture.java:506)\n\tat java.base/java.util.concurrent.CompletableFuture.postFire(CompletableFuture.java:610)\n\tat java.base/java.util.concurrent.CompletableFuture$UniCompose.tryFire(CompletableFuture.java:1085)\n\tat java.base/java.util.concurrent.CompletableFuture$Completion.run(CompletableFuture.java:478)\n\t... 3 more\nCaused by: org.apache.flink.runtime.client.JobCancellationException: Job was cancelled.\n\tat org.apache.flink.runtime.jobmaster.JobResult.toJobExecutionResult(JobResult.java:146)\n\tat org.apache.flink.client.deployment.ClusterClientJobClientAdapter.lambda$getJobExecutionResult$6(ClusterClientJobClientAdapter.java:123)\n\t... 23 more\n</div>\n        </div>\n    </div>\n</div>\n"
+          }
+        ]
+      }
+    },
+    {
+      "text": "%md\n# Task 4.3: Analysis and visualization\nNow that the streaming clickstream data has been ingested and enriched with the catalog data stored in Amazon S3, you will analyze the data to determine the Sales per category in a given time interval.\nIn this task, you filter the output according to the event (**purchased-item**) and **GROUP** the output for every category for every 10 seconds.\n**This provides the SALES per category in the last 10 seconds.**\n\n### WHERE statement:\nPerforms a filter on **purchased_item**.\n### GROUP BY statement: \nGroups the SALES per category in the last 10 seconds.\n### TUMBLE PROCTIME statement:\nThis will essentially create a mini-batch of data on top of which you can run an aggregation. \nIn this lab, we will define a tumbling window over the past 10 seconds and perform a **SUM** of **purchased_items** to provide sales figures. \n\n*****\n### Instructions:\n1. Check the previous code block to ensure that it has been stopped. \n2. Run the following paragraph either by choosing the Play button at the top right of the paragraph or by pressing Shift + Enter keys with the paragraph selected.\n3. `Stop the following paragraph by choosing the Pause button at the top right of the paragraph or by choosing Ctrl + Option + C (Ctrl + Alt + C in Windows) with the paragraph selected when you have seen the results`.\n\n*****\n### Expected output:\nIt can take 1-2 minutes for the data to appear in the graph. \nOutput is a bar graph of the purchased_item every 10 seconds per segment page. \n`Initially only the blue bar will be presented. This graph updates over time, and we recommend that you leave it running for a couple of minutes to visualize and explore the results.`\n",
+      "user": "anonymous",
+      "dateUpdated": "2025-10-06T00:13:34+0000",
+      "progress": 0,
+      "config": {
+        "tableHide": false,
+        "editorSetting": {
+          "language": "markdown",
+          "editOnDblClick": true,
+          "completionKey": "TAB",
+          "completionSupport": false
+        },
+        "colWidth": 12,
+        "editorMode": "ace/mode/markdown",
+        "fontSize": 9,
+        "editorHide": true,
+        "results": {},
+        "enabled": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "HTML",
+            "data": "<div class=\"markdown-body\">\n<h1>Task 4.3: Analysis and visualization</h1>\n<p>Now that the streaming clickstream data has been ingested and enriched with the catalog data stored in Amazon S3, you will analyze the data to determine the Sales per category in a given time interval.<br />\nIn this task, you filter the output according to the event (<strong>purchased-item</strong>) and <strong>GROUP</strong> the output for every category for every 10 seconds.<br />\n<strong>This provides the SALES per category in the last 10 seconds.</strong></p>\n<h3>WHERE statement:</h3>\n<p>Performs a filter on <strong>purchased_item</strong>.</p>\n<h3>GROUP BY statement:</h3>\n<p>Groups the SALES per category in the last 10 seconds.</p>\n<h3>TUMBLE PROCTIME statement:</h3>\n<p>This will essentially create a mini-batch of data on top of which you can run an aggregation.<br />\nIn this lab, we will define a tumbling window over the past 10 seconds and perform a <strong>SUM</strong> of <strong>purchased_items</strong> to provide sales figures.</p>\n<hr />\n<h3>Instructions:</h3>\n<ol>\n<li>Check the previous code block to ensure that it has been stopped.</li>\n<li>Run the following paragraph either by choosing the Play button at the top right of the paragraph or by pressing Shift + Enter keys with the paragraph selected.</li>\n<li><code>Stop the following paragraph by choosing the Pause button at the top right of the paragraph or by choosing Ctrl + Option + C (Ctrl + Alt + C in Windows) with the paragraph selected when you have seen the results</code>.</li>\n</ol>\n<hr />\n<h3>Expected output:</h3>\n<p>It can take 1-2 minutes for the data to appear in the graph.<br />\nOutput is a bar graph of the purchased_item every 10 seconds per segment page.<br />\n<code>Initially only the blue bar will be presented. This graph updates over time, and we recommend that you leave it running for a couple of minutes to visualize and explore the results.</code></p>\n\n</div>"
+          }
+        ]
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1759709614638_649039415",
+      "id": "paragraph_1661797459277_1464228391",
+      "dateCreated": "2025-10-06T00:13:34+0000",
+      "status": "READY",
+      "$$hashKey": "object:181"
+    },
+    {
+      "text": "%flink.ssql(type=update)\n SELECT\n        TUMBLE_START(PROCTIME(), INTERVAL '10' seconds) as start_window,\n        TUMBLE_END(PROCTIME(), INTERVAL '10' seconds) as end_window,\n        clickstream_events.page,  \n        SUM(CAST(item_price as FLOAT) * item_quantity) AS SALES\nfrom clickstream_events \ninner join catalog_items_stream\non   clickstream_events.item_id = catalog_items_stream.item_id\nWHERE (event= 'purchased_item')\nGROUP BY TUMBLE(PROCTIME(), INTERVAL '10' seconds ),clickstream_events.page, item_price;\n",
+      "user": "anonymous",
+      "dateUpdated": "2025-10-06T00:30:09+0000",
+      "progress": 0,
+      "config": {
+        "editorSetting": {
+          "language": "sql",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "colWidth": 12,
+        "editorMode": "ace/mode/sql",
+        "fontSize": 9,
+        "results": {
+          "0": {
+            "graph": {
+              "mode": "multiBarChart",
+              "height": 300,
+              "optionOpen": false,
+              "setting": {
+                "multiBarChart": {
+                  "xLabelStatus": "default",
+                  "stacked": true
+                }
+              },
+              "commonSetting": {},
+              "keys": [
+                {
+                  "name": "page",
+                  "index": 2,
+                  "aggr": "sum"
+                }
+              ],
+              "groups": [
+                {
+                  "name": "end_window",
+                  "index": 1,
+                  "aggr": "sum"
+                },
+                {
+                  "name": "start_window",
+                  "index": 0,
+                  "aggr": "sum"
+                }
+              ],
+              "values": [
+                {
+                  "name": "SALES",
+                  "index": 3,
+                  "aggr": "sum"
+                }
+              ]
+            },
+            "helium": {}
+          }
+        },
+        "enabled": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "runtimeInfos": {
+        "jobUrl": {
+          "propertyName": "jobUrl",
+          "label": "FLINK JOB",
+          "tooltip": "View in Flink web UI",
+          "group": "flink",
+          "values": [
+            {
+              "jobUrl": "/flinkdashboard/#/job/ffcb031b9c09b115182370bc2fa95995",
+              "$$hashKey": "object:17470"
+            }
+          ],
+          "interpreterSettingId": "flink"
+        }
+      },
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1759709614639_392761363",
+      "id": "paragraph_1661797492310_251847900",
+      "dateCreated": "2025-10-06T00:13:34+0000",
+      "status": "ABORT",
+      "$$hashKey": "object:182",
+      "dateFinished": "2025-10-06T00:30:17+0000",
+      "dateStarted": "2025-10-06T00:26:31+0000",
+      "results": {
+        "code": "ERROR",
+        "msg": [
+          {
+            "type": "TABLE",
+            "data": "start_window\tend_window\tpage\tSALES\n2025-10-06T00:26:50\t2025-10-06T00:27\telectronics\t120.0\n2025-10-06T00:26:50\t2025-10-06T00:27\tapparel\t75.0\n2025-10-06T00:27\t2025-10-06T00:27:10\telectronics\t120.0\n2025-10-06T00:27\t2025-10-06T00:27:10\tapparel\t48.0\n2025-10-06T00:27\t2025-10-06T00:27:10\tapparel\t60.0\n2025-10-06T00:27\t2025-10-06T00:27:10\tbooks\t32.0\n2025-10-06T00:27:10\t2025-10-06T00:27:20\tapparel\t60.0\n2025-10-06T00:27:10\t2025-10-06T00:27:20\tbooks\t75.0\n2025-10-06T00:27:20\t2025-10-06T00:27:30\telectronics\t75.0\n2025-10-06T00:27:20\t2025-10-06T00:27:30\tapparel\t90.0\n2025-10-06T00:27:20\t2025-10-06T00:27:30\tapparel\t150.0\n2025-10-06T00:27:20\t2025-10-06T00:27:30\telectronics\t40.0\n2025-10-06T00:27:30\t2025-10-06T00:27:40\tapparel\t15.0\n2025-10-06T00:27:40\t2025-10-06T00:27:50\tbooks\t12.0\n2025-10-06T00:27:50\t2025-10-06T00:28\tbooks\t40.0\n2025-10-06T00:27:50\t2025-10-06T00:28\telectronics\t20.0\n2025-10-06T00:27:50\t2025-10-06T00:28\tapparel\t120.0\n2025-10-06T00:27:50\t2025-10-06T00:28\tfood\t50.0\n2025-10-06T00:27:50\t2025-10-06T00:28\tbooks\t30.0\n2025-10-06T00:27:50\t2025-10-06T00:28\thome\t40.0\n2025-10-06T00:27:50\t2025-10-06T00:28\tbooks\t125.0\n2025-10-06T00:28\t2025-10-06T00:28:10\telectronics\t12.0\n2025-10-06T00:28\t2025-10-06T00:28:10\tbooks\t60.0\n2025-10-06T00:28\t2025-10-06T00:28:10\thome\t10.0\n2025-10-06T00:28\t2025-10-06T00:28:10\tbooks\t125.0\n2025-10-06T00:28\t2025-10-06T00:28:10\tbooks\t24.0\n2025-10-06T00:28:10\t2025-10-06T00:28:20\telectronics\t75.0\n2025-10-06T00:28:20\t2025-10-06T00:28:30\telectronics\t75.0\n2025-10-06T00:28:20\t2025-10-06T00:28:30\tbooks\t60.0\n2025-10-06T00:28:30\t2025-10-06T00:28:40\tfood\t60.0\n2025-10-06T00:28:30\t2025-10-06T00:28:40\tfood\t105.0\n2025-10-06T00:28:30\t2025-10-06T00:28:40\tbooks\t60.0\n2025-10-06T00:28:30\t2025-10-06T00:28:40\tbooks\t100.0\n2025-10-06T00:28:30\t2025-10-06T00:28:40\tbooks\t45.0\n2025-10-06T00:28:40\t2025-10-06T00:28:50\tapparel\t150.0\n2025-10-06T00:28:40\t2025-10-06T00:28:50\telectronics\t45.0\n2025-10-06T00:28:40\t2025-10-06T00:28:50\tapparel\t48.0\n2025-10-06T00:28:50\t2025-10-06T00:29\telectronics\t75.0\n2025-10-06T00:28:50\t2025-10-06T00:29\tbooks\t5.0\n2025-10-06T00:28:50\t2025-10-06T00:29\thome\t60.0\n2025-10-06T00:29\t2025-10-06T00:29:10\tbooks\t60.0\n2025-10-06T00:29\t2025-10-06T00:29:10\thome\t90.0\n2025-10-06T00:29\t2025-10-06T00:29:10\tbooks\t16.0\n2025-10-06T00:29:10\t2025-10-06T00:29:20\telectronics\t90.0\n2025-10-06T00:29:20\t2025-10-06T00:29:30\tapparel\t32.0\n2025-10-06T00:29:40\t2025-10-06T00:29:50\tbooks\t15.0\n2025-10-06T00:29:40\t2025-10-06T00:29:50\tbooks\t10.0\n2025-10-06T00:29:40\t2025-10-06T00:29:50\thome\t100.0\n2025-10-06T00:29:40\t2025-10-06T00:29:50\thome\t45.0\n2025-10-06T00:29:50\t2025-10-06T00:30\thome\t125.0\n2025-10-06T00:29:50\t2025-10-06T00:30\tapparel\t24.0\n2025-10-06T00:30\t2025-10-06T00:30:10\tapparel\t36.0\n"
+          },
+          {
+            "type": "TEXT",
+            "data": "Fail to run sql command: SELECT\n        TUMBLE_START(PROCTIME(), INTERVAL '10' seconds) as start_window,\n        TUMBLE_END(PROCTIME(), INTERVAL '10' seconds) as end_window,\n        clickstream_events.page,  \n        SUM(CAST(item_price as FLOAT) * item_quantity) AS SALES\nfrom clickstream_events \ninner join catalog_items_stream\non   clickstream_events.item_id = catalog_items_stream.item_id\nWHERE (event= 'purchased_item')\nGROUP BY TUMBLE(PROCTIME(), INTERVAL '10' seconds ),clickstream_events.page, item_price\n"
+          },
+          {
+            "type": "ANGULAR",
+            "data": "<div class='container ng-scope' style='padding-left:0px;padding-right:0px;'>\n    <div class='panel panel-danger'>\n        <div class='panel-heading' ng-click='isOpen=!isOpen' ng-init='isOpen=false' style=\"cursor:pointer\">\n            <div class='plainTextContainer' style='font-weight:bolder'><i class=\"fa fa-caret-right fa-fw\" style=\"padding-right:7px;transition:all 0.3s;{{isOpen?'transform:rotate(90deg);transform-origin:25% 45%':''}}\"></i>Job was cancelled.</div>\n        </div>\n        <div class='panel-collapse' uib-collapse='!isOpen'>\n            <div class='text' style='max-height:300px;overflow:auto;padding:10px'>java.io.IOException: Fail to run stream sql job\n\tat org.apache.zeppelin.flink.sql.AbstractStreamSqlJob.run(AbstractStreamSqlJob.java:172)\n\tat org.apache.zeppelin.flink.sql.AbstractStreamSqlJob.run(AbstractStreamSqlJob.java:105)\n\tat org.apache.zeppelin.flink.FlinkStreamSqlInterpreter.callInnerSelect(FlinkStreamSqlInterpreter.java:89)\n\tat org.apache.zeppelin.flink.FlinkSqlInterrpeter.callSelect(FlinkSqlInterrpeter.java:503)\n\tat org.apache.zeppelin.flink.FlinkSqlInterrpeter.callCommand(FlinkSqlInterrpeter.java:266)\n\tat org.apache.zeppelin.flink.FlinkSqlInterrpeter.runSqlList(FlinkSqlInterrpeter.java:160)\n\tat org.apache.zeppelin.flink.FlinkSqlInterrpeter.internalInterpret(FlinkSqlInterrpeter.java:112)\n\tat org.apache.zeppelin.interpreter.AbstractInterpreter.interpret(AbstractInterpreter.java:47)\n\tat org.apache.zeppelin.interpreter.LazyOpenInterpreter.interpret(LazyOpenInterpreter.java:110)\n\tat org.apache.zeppelin.interpreter.remote.RemoteInterpreterServer$InterpretJob.jobRun(RemoteInterpreterServer.java:852)\n\tat org.apache.zeppelin.interpreter.remote.RemoteInterpreterServer$InterpretJob.jobRun(RemoteInterpreterServer.java:744)\n\tat org.apache.zeppelin.scheduler.Job.run(Job.java:172)\n\tat org.apache.zeppelin.scheduler.AbstractScheduler.runJob(AbstractScheduler.java:132)\n\tat org.apache.zeppelin.scheduler.ParallelScheduler.lambda$runJobInScheduler$0(ParallelScheduler.java:46)\n\tat java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1128)\n\tat java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:628)\n\tat java.base/java.lang.Thread.run(Thread.java:829)\nCaused by: org.apache.flink.client.program.ProgramInvocationException: Job failed (JobID: ffcb031b9c09b115182370bc2fa95995)\n\tat org.apache.flink.client.deployment.ClusterClientJobClientAdapter.lambda$getJobExecutionResult$6(ClusterClientJobClientAdapter.java:125)\n\tat java.base/java.util.concurrent.CompletableFuture$UniApply.tryFire(CompletableFuture.java:642)\n\tat java.base/java.util.concurrent.CompletableFuture.postComplete(CompletableFuture.java:506)\n\tat java.base/java.util.concurrent.CompletableFuture.complete(CompletableFuture.java:2079)\n\tat org.apache.flink.runtime.concurrent.FutureUtils.lambda$retryOperationWithDelay$9(FutureUtils.java:394)\n\tat java.base/java.util.concurrent.CompletableFuture.uniWhenComplete(CompletableFuture.java:859)\n\tat java.base/java.util.concurrent.CompletableFuture$UniWhenComplete.tryFire(CompletableFuture.java:837)\n\tat java.base/java.util.concurrent.CompletableFuture.postComplete(CompletableFuture.java:506)\n\tat java.base/java.util.concurrent.CompletableFuture.complete(CompletableFuture.java:2079)\n\tat org.apache.flink.client.program.rest.RestClusterClient.lambda$pollResourceAsync$24(RestClusterClient.java:670)\n\tat java.base/java.util.concurrent.CompletableFuture.uniWhenComplete(CompletableFuture.java:859)\n\tat java.base/java.util.concurrent.CompletableFuture$UniWhenComplete.tryFire(CompletableFuture.java:837)\n\tat java.base/java.util.concurrent.CompletableFuture.postComplete(CompletableFuture.java:506)\n\tat java.base/java.util.concurrent.CompletableFuture.complete(CompletableFuture.java:2079)\n\tat org.apache.flink.runtime.concurrent.FutureUtils.lambda$retryOperationWithDelay$9(FutureUtils.java:394)\n\tat java.base/java.util.concurrent.CompletableFuture.uniWhenComplete(CompletableFuture.java:859)\n\tat java.base/java.util.concurrent.CompletableFuture$UniWhenComplete.tryFire(CompletableFuture.java:837)\n\tat java.base/java.util.concurrent.CompletableFuture.postComplete(CompletableFuture.java:506)\n\tat java.base/java.util.concurrent.CompletableFuture.postFire(CompletableFuture.java:610)\n\tat java.base/java.util.concurrent.CompletableFuture$UniCompose.tryFire(CompletableFuture.java:1085)\n\tat java.base/java.util.concurrent.CompletableFuture$Completion.run(CompletableFuture.java:478)\n\t... 3 more\nCaused by: org.apache.flink.runtime.client.JobCancellationException: Job was cancelled.\n\tat org.apache.flink.runtime.jobmaster.JobResult.toJobExecutionResult(JobResult.java:146)\n\tat org.apache.flink.client.deployment.ClusterClientJobClientAdapter.lambda$getJobExecutionResult$6(ClusterClientJobClientAdapter.java:123)\n\t... 23 more\n</div>\n        </div>\n    </div>\n</div>\n"
+          }
+        ]
+      }
+    },
+    {
+      "text": "%md\n# Task 4.4: Output to Kinesis data stream\n\nNow that you have visualized the analysis, you write the output of the analysis to a Kinesis data stream which will be used for further downstream processing.\n\n### Step 4.4.1\n### CREATE statement: \nYou create an in-memory table **sink_table** for the Kinesis data stream that will contain the output data (enriched data). Apache Flink will use this statement to define the metadata for records coming into a data stream using a **kinesis** connector.\n\n### Kinesis connector details:\nThe table uses the **Kinesis** connector to read from a Kinesis data stream called **OutputDataStream** in the **Region** Region from the **latest** stream position in **JSON** format.\n\n*****\n### Instructions:\n\n1. Check the previous code block to ensure that it has been stopped.\n2. Replace the **YOUR_OutputDataStream_GOES_HERE** placeholder value within the single quote with the **OutputDataStream** found in the left panel of the lab instructions.\n3. Replace the **YOUR_Region_GOES_HERE** placeholder value within the single quote with the **Region** found in the left panel of lab instructions.\n4. Run the following paragraph either by choosing the Play button at the top right of the paragraph or by pressing Shift + Enter keys with the paragraph selected.\n\n*****\n### Expected output:\nYou will notice the table deleted and re-created as the output.\n",
+      "user": "anonymous",
+      "dateUpdated": "2025-10-06T00:13:34+0000",
+      "progress": 0,
+      "config": {
+        "tableHide": false,
+        "editorSetting": {
+          "language": "markdown",
+          "editOnDblClick": true,
+          "completionKey": "TAB",
+          "completionSupport": false
+        },
+        "colWidth": 12,
+        "editorMode": "ace/mode/markdown",
+        "fontSize": 9,
+        "editorHide": true,
+        "results": {},
+        "enabled": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "HTML",
+            "data": "<div class=\"markdown-body\">\n<h1>Task 4.4: Output to Kinesis data stream</h1>\n<p>Now that you have visualized the analysis, you write the output of the analysis to a Kinesis data stream which will be used for further downstream processing.</p>\n<h3>Step 4.4.1</h3>\n<h3>CREATE statement:</h3>\n<p>You create an in-memory table <strong>sink_table</strong> for the Kinesis data stream that will contain the output data (enriched data). Apache Flink will use this statement to define the metadata for records coming into a data stream using a <strong>kinesis</strong> connector.</p>\n<h3>Kinesis connector details:</h3>\n<p>The table uses the <strong>Kinesis</strong> connector to read from a Kinesis data stream called <strong>OutputDataStream</strong> in the <strong>Region</strong> Region from the <strong>latest</strong> stream position in <strong>JSON</strong> format.</p>\n<hr />\n<h3>Instructions:</h3>\n<ol>\n<li>Check the previous code block to ensure that it has been stopped.</li>\n<li>Replace the <strong>YOUR_OutputDataStream_GOES_HERE</strong> placeholder value within the single quote with the <strong>OutputDataStream</strong> found in the left panel of the lab instructions.</li>\n<li>Replace the <strong>YOUR_Region_GOES_HERE</strong> placeholder value within the single quote with the <strong>Region</strong> found in the left panel of lab instructions.</li>\n<li>Run the following paragraph either by choosing the Play button at the top right of the paragraph or by pressing Shift + Enter keys with the paragraph selected.</li>\n</ol>\n<hr />\n<h3>Expected output:</h3>\n<p>You will notice the table deleted and re-created as the output.</p>\n\n</div>"
+          }
+        ]
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1759709614639_526283837",
+      "id": "paragraph_1661797530605_1865792316",
+      "dateCreated": "2025-10-06T00:13:34+0000",
+      "status": "READY",
+      "$$hashKey": "object:183"
+    },
+    {
+      "text": "%flink.ssql(type=update)\n\n-- Replace the `YOUR_OutputDataStream_GOES_HERE` placeholder value within the single quote with the `OutputDataStream` found in the left panel of lab instructions.\n-- Replace the `YOUR_Region_GOES_HERE` placeholder value within the single quote with the `Region` found in the left panel of lab instructions.\n\nDROP TABLE IF EXISTS sink_table;\nCREATE TABLE sink_table (\n    event_id STRING,\n    event STRING,\n    user_id STRING,\n    item_id STRING,\n    item_quantity BIGINT,\n    event_time TIMESTAMP(3),\n    os STRING,\n    page STRING,\n    url STRING,\n    item_name STRING,\n    item_price STRING\n)\nWITH (\n'connector' = 'kinesis',\n'stream' = 'LabStack-b97128e3-2cd9-4702-9fa2-6f1e298f1e6e-8tT48je9QM5MYdfNTMYG6T-0-AlertDataStream-K45ek7iaVcBd',\n'aws.region' = 'us-west-2',\n'scan.stream.initpos' = 'LATEST',\n'sink.producer.aggregation-enabled' ='false',\n'format' = 'json'\n);\n",
+      "user": "anonymous",
+      "dateUpdated": "2025-10-06T00:31:31+0000",
+      "progress": 0,
+      "config": {
+        "editorSetting": {
+          "language": "sql",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "colWidth": 12,
+        "editorMode": "ace/mode/sql",
+        "fontSize": 9,
+        "results": {},
+        "enabled": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1759709614639_1527444744",
+      "id": "paragraph_1661797687506_962488046",
+      "dateCreated": "2025-10-06T00:13:34+0000",
+      "status": "FINISHED",
+      "$$hashKey": "object:184",
+      "dateFinished": "2025-10-06T00:31:32+0000",
+      "dateStarted": "2025-10-06T00:31:31+0000",
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "Table has been dropped.\nTable has been created.\n"
+          }
+        ]
+      }
+    },
+    {
+      "text": "%md\n### Step 4.4.2 \nAfter the **sink_table** has been defined, you insert catalog records into the Kinesis data stream and visualize the data as a table.\n### INSERT statement: \nInserts the data records into the **sink_table** table created.\n\n### SELECT query:\nRetrieves all catalog data from the **sink_table** table.\n*****\n### Instructions:\n1. `Run the following two paragraphs either by choosing the Play button at the top right of the paragraph or by pressing Shift + Enter keys with the paragraph selected.`\n    You will notice a table of the clickstream data enriched with the catalog data.\n2. `Stop both of the following paragraph by choosing the Pause button at the top right of the paragraph or by choosing Ctrl + Option + C (Ctrl + Alt + C in Windows) with the paragraph selected when you have seen the results`.\n\n*****\n### Expected output:\nA table of the clickstream data enriched with the catalog data.\nIt can take 1-2 minutes for the query to return the output.\n",
+      "user": "anonymous",
+      "dateUpdated": "2025-10-06T00:13:34+0000",
+      "progress": 0,
+      "config": {
+        "tableHide": false,
+        "editorSetting": {
+          "language": "markdown",
+          "editOnDblClick": true,
+          "completionKey": "TAB",
+          "completionSupport": false
+        },
+        "colWidth": 12,
+        "editorMode": "ace/mode/markdown",
+        "fontSize": 9,
+        "editorHide": true,
+        "results": {},
+        "enabled": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "HTML",
+            "data": "<div class=\"markdown-body\">\n<h3>Step 4.4.2</h3>\n<p>After the <strong>sink_table</strong> has been defined, you insert catalog records into the Kinesis data stream and visualize the data as a table.</p>\n<h3>INSERT statement:</h3>\n<p>Inserts the data records into the <strong>sink_table</strong> table created.</p>\n<h3>SELECT query:</h3>\n<p>Retrieves all catalog data from the <strong>sink_table</strong> table.</p>\n<hr />\n<h3>Instructions:</h3>\n<ol>\n<li><code>Run the following two paragraphs either by choosing the Play button at the top right of the paragraph or by pressing Shift + Enter keys with the paragraph selected.</code><br />\nYou will notice a table of the clickstream data enriched with the catalog data.</li>\n<li><code>Stop both of the following paragraph by choosing the Pause button at the top right of the paragraph or by choosing Ctrl + Option + C (Ctrl + Alt + C in Windows) with the paragraph selected when you have seen the results</code>.</li>\n</ol>\n<hr />\n<h3>Expected output:</h3>\n<p>A table of the clickstream data enriched with the catalog data.<br />\nIt can take 1-2 minutes for the query to return the output.</p>\n\n</div>"
+          }
+        ]
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1759709614639_858166296",
+      "id": "paragraph_1661797746396_1359411522",
+      "dateCreated": "2025-10-06T00:13:34+0000",
+      "status": "READY",
+      "$$hashKey": "object:185"
+    },
+    {
+      "text": "%flink.ssql(type=update)\nINSERT INTO sink_table\nSELECT  \n event_id ,\n    event ,\n    user_id,\n    catalog_items_stream.item_id,\n    item_quantity,\n    event_time,\n    os,\n    catalog_items_stream.page,\n    url,\n    item_name,\n    item_price\nfrom clickstream_events \ninner join catalog_items_stream\non   clickstream_events.item_id = catalog_items_stream.item_id;",
+      "user": "anonymous",
+      "dateUpdated": "2025-10-06T00:32:06+0000",
+      "progress": 0,
+      "config": {
+        "lineNumbers": true,
+        "editorSetting": {
+          "language": "sql",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "colWidth": 12,
+        "editorMode": "ace/mode/sql",
+        "fontSize": 9,
+        "results": {},
+        "enabled": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "runtimeInfos": {
+        "jobUrl": {
+          "propertyName": "jobUrl",
+          "label": "FLINK JOB",
+          "tooltip": "View in Flink web UI",
+          "group": "flink",
+          "values": [
+            {
+              "jobUrl": "/flinkdashboard/#/job/42da73f823b10735a6f43283a6e56814",
+              "$$hashKey": "object:30929"
+            }
+          ],
+          "interpreterSettingId": "flink"
+        }
+      },
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1759709614639_1145562005",
+      "id": "paragraph_1661797819938_2110739499",
+      "dateCreated": "2025-10-06T00:13:34+0000",
+      "status": "ABORT",
+      "$$hashKey": "object:186",
+      "dateFinished": "2025-10-06T00:33:59+0000",
+      "dateStarted": "2025-10-06T00:32:06+0000",
+      "results": {
+        "code": "ERROR",
+        "msg": [
+          {
+            "type": "ANGULAR",
+            "data": "<h1>Duration: {{duration}} </h1>\n"
+          },
+          {
+            "type": "TEXT",
+            "data": "Fail to run sql command: INSERT INTO sink_table\nSELECT  \n event_id ,\n    event ,\n    user_id,\n    catalog_items_stream.item_id,\n    item_quantity,\n    event_time,\n    os,\n    catalog_items_stream.page,\n    url,\n    item_name,\n    item_price\nfrom clickstream_events \ninner join catalog_items_stream\non   clickstream_events.item_id = catalog_items_stream.item_id\n"
+          },
+          {
+            "type": "ANGULAR",
+            "data": "<div class='container ng-scope' style='padding-left:0px;padding-right:0px;'>\n    <div class='panel panel-danger'>\n        <div class='panel-heading' ng-click='isOpen=!isOpen' ng-init='isOpen=false' style=\"cursor:pointer\">\n            <div class='plainTextContainer' style='font-weight:bolder'><i class=\"fa fa-caret-right fa-fw\" style=\"padding-right:7px;transition:all 0.3s;{{isOpen?'transform:rotate(90deg);transform-origin:25% 45%':''}}\"></i>Job was cancelled.</div>\n        </div>\n        <div class='panel-collapse' uib-collapse='!isOpen'>\n            <div class='text' style='max-height:300px;overflow:auto;padding:10px'>java.io.IOException: org.apache.flink.client.program.ProgramInvocationException: Job failed (JobID: 42da73f823b10735a6f43283a6e56814)\n\tat org.apache.zeppelin.flink.FlinkSqlInterrpeter.callInsertInto(FlinkSqlInterrpeter.java:538)\n\tat org.apache.zeppelin.flink.FlinkStreamSqlInterpreter.callInsertInto(FlinkStreamSqlInterpreter.java:97)\n\tat org.apache.zeppelin.flink.FlinkSqlInterrpeter.callCommand(FlinkSqlInterrpeter.java:273)\n\tat org.apache.zeppelin.flink.FlinkSqlInterrpeter.runSqlList(FlinkSqlInterrpeter.java:160)\n\tat org.apache.zeppelin.flink.FlinkSqlInterrpeter.internalInterpret(FlinkSqlInterrpeter.java:112)\n\tat org.apache.zeppelin.interpreter.AbstractInterpreter.interpret(AbstractInterpreter.java:47)\n\tat org.apache.zeppelin.interpreter.LazyOpenInterpreter.interpret(LazyOpenInterpreter.java:110)\n\tat org.apache.zeppelin.interpreter.remote.RemoteInterpreterServer$InterpretJob.jobRun(RemoteInterpreterServer.java:852)\n\tat org.apache.zeppelin.interpreter.remote.RemoteInterpreterServer$InterpretJob.jobRun(RemoteInterpreterServer.java:744)\n\tat org.apache.zeppelin.scheduler.Job.run(Job.java:172)\n\tat org.apache.zeppelin.scheduler.AbstractScheduler.runJob(AbstractScheduler.java:132)\n\tat org.apache.zeppelin.scheduler.ParallelScheduler.lambda$runJobInScheduler$0(ParallelScheduler.java:46)\n\tat java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1128)\n\tat java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:628)\n\tat java.base/java.lang.Thread.run(Thread.java:829)\nCaused by: org.apache.flink.client.program.ProgramInvocationException: Job failed (JobID: 42da73f823b10735a6f43283a6e56814)\n\tat org.apache.flink.client.deployment.ClusterClientJobClientAdapter.lambda$getJobExecutionResult$6(ClusterClientJobClientAdapter.java:125)\n\tat java.base/java.util.concurrent.CompletableFuture$UniApply.tryFire(CompletableFuture.java:642)\n\tat java.base/java.util.concurrent.CompletableFuture.postComplete(CompletableFuture.java:506)\n\tat java.base/java.util.concurrent.CompletableFuture.complete(CompletableFuture.java:2079)\n\tat org.apache.flink.runtime.concurrent.FutureUtils.lambda$retryOperationWithDelay$9(FutureUtils.java:394)\n\tat java.base/java.util.concurrent.CompletableFuture.uniWhenComplete(CompletableFuture.java:859)\n\tat java.base/java.util.concurrent.CompletableFuture$UniWhenComplete.tryFire(CompletableFuture.java:837)\n\tat java.base/java.util.concurrent.CompletableFuture.postComplete(CompletableFuture.java:506)\n\tat java.base/java.util.concurrent.CompletableFuture.complete(CompletableFuture.java:2079)\n\tat org.apache.flink.client.program.rest.RestClusterClient.lambda$pollResourceAsync$24(RestClusterClient.java:670)\n\tat java.base/java.util.concurrent.CompletableFuture.uniWhenComplete(CompletableFuture.java:859)\n\tat java.base/java.util.concurrent.CompletableFuture$UniWhenComplete.tryFire(CompletableFuture.java:837)\n\tat java.base/java.util.concurrent.CompletableFuture.postComplete(CompletableFuture.java:506)\n\tat java.base/java.util.concurrent.CompletableFuture.complete(CompletableFuture.java:2079)\n\tat org.apache.flink.runtime.concurrent.FutureUtils.lambda$retryOperationWithDelay$9(FutureUtils.java:394)\n\tat java.base/java.util.concurrent.CompletableFuture.uniWhenComplete(CompletableFuture.java:859)\n\tat java.base/java.util.concurrent.CompletableFuture$UniWhenComplete.tryFire(CompletableFuture.java:837)\n\tat java.base/java.util.concurrent.CompletableFuture.postComplete(CompletableFuture.java:506)\n\tat java.base/java.util.concurrent.CompletableFuture.postFire(CompletableFuture.java:610)\n\tat java.base/java.util.concurrent.CompletableFuture$UniCompose.tryFire(CompletableFuture.java:1085)\n\tat java.base/java.util.concurrent.CompletableFuture$Completion.run(CompletableFuture.java:478)\n\t... 3 more\nCaused by: org.apache.flink.runtime.client.JobCancellationException: Job was cancelled.\n\tat org.apache.flink.runtime.jobmaster.JobResult.toJobExecutionResult(JobResult.java:146)\n\tat org.apache.flink.client.deployment.ClusterClientJobClientAdapter.lambda$getJobExecutionResult$6(ClusterClientJobClientAdapter.java:123)\n\t... 23 more\n</div>\n        </div>\n    </div>\n</div>\n"
+          }
+        ]
+      }
+    },
+    {
+      "text": "%flink.ssql(type=update)\nSELECT * FROM sink_table;\n",
+      "user": "anonymous",
+      "dateUpdated": "2025-10-06T00:32:40+0000",
+      "progress": 0,
+      "config": {
+        "editorSetting": {
+          "language": "sql",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "colWidth": 12,
+        "editorMode": "ace/mode/sql",
+        "fontSize": 9,
+        "results": {},
+        "enabled": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "runtimeInfos": {
+        "jobUrl": {
+          "propertyName": "jobUrl",
+          "label": "FLINK JOB",
+          "tooltip": "View in Flink web UI",
+          "group": "flink",
+          "values": [
+            {
+              "jobUrl": "/flinkdashboard/#/job/211c20f57314155491ed4a61a15031dd",
+              "$$hashKey": "object:30875"
+            }
+          ],
+          "interpreterSettingId": "flink"
+        }
+      },
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1759709614639_1002239359",
+      "id": "paragraph_1661798102508_1335305551",
+      "dateCreated": "2025-10-06T00:13:34+0000",
+      "status": "ABORT",
+      "$$hashKey": "object:187",
+      "dateFinished": "2025-10-06T00:33:59+0000",
+      "dateStarted": "2025-10-06T00:32:40+0000",
+      "results": {
+        "code": "ERROR",
+        "msg": [
+          {
+            "type": "TABLE",
+            "data": "event_id\tevent\tuser_id\titem_id\titem_quantity\tevent_time\tos\tpage\turl\titem_name\titem_price\n02707344c2a74e6b1f1cfadb172ba4c4\tclicked_item_description\t20\t52\t0\t2025-10-06T00:33:15.905\tandroid\tbooks\twww.example.com\tCookbook\t15.00\n02cfab21faebec3e941f3a89bf66be8f\treviewed_item\t49\t22\t0\t2025-10-06T00:32:57.519\tandroid\tfood\twww.example.com\tCake Mix\t12.00\n04d6f0c0e0b088f34a1d187c1d6ca898\tpurchased_item\t50\t12\t5\t2025-10-06T00:33:26.218\tweb\tapparel\twww.example.com\tTShirt\t5.00\n070213775eb7659b794d77a7cd8e241f\tclicked_review\t13\t52\t0\t2025-10-06T00:33:04.660\tweb\tbooks\twww.example.com\tCookbook\t15.00\n0ab56bd892225fc4c6dcedb85b8c9222\tentered_payment_method\t15\t32\t0\t2025-10-06T00:33:49.664\tweb\telectronics\twww.example.com\tKeyboard\t20.00\n0ae5f143dc5c8569f4663a4278d79c8e\treviewed_item\t2\t43\t0\t2025-10-06T00:33:22.099\tweb\thome\twww.example.com\tCutting board\t20.00\n0be624e3bcfbac10312b9547e1c4d7ea\tentered_payment_method\t45\t21\t0\t2025-10-06T00:33:51.829\tandroid\tfood\twww.example.com\tPasta Sauce\t8.00\n0d05e0a45b030cea3e4339cc93ee6db0\tliked_item\t46\t41\t0\t2025-10-06T00:33:17.994\tios\thome\twww.example.com\tDinner set\t30.00\n0ea1d36ddc62adaf62f2b28ce5622baa\tclicked_item_description\t5\t22\t0\t2025-10-06T00:33:47.631\tandroid\tfood\twww.example.com\tCake Mix\t12.00\n186a145fda5532e110b8e42b2d541862\tpurchased_item\t48\t33\t4\t2025-10-06T00:33:04.684\tios\telectronics\twww.example.com\tMouse\t15.00\n189d81a1025e7e0b5b8880730b539e76\tpurchased_item\t46\t21\t1\t2025-10-06T00:33:49.755\tios\tfood\twww.example.com\tPasta Sauce\t8.00\n197a33762124bd4831116346bd2d2e44\tentered_payment_method\t36\t23\t0\t2025-10-06T00:33:52.838\tandroid\tfood\twww.example.com\tNoodle\t6.00\n1f5970b894cf944a627bdbdf58fcada0\tpurchased_item\t2\t22\t2\t2025-10-06T00:33:08.791\tweb\tfood\twww.example.com\tCake Mix\t12.00\n21fc60ff0567d82566b224383a49f80d\tclicked_review\t19\t23\t0\t2025-10-06T00:33:20.025\tios\tfood\twww.example.com\tNoodle\t6.00\n2809ac50eb578e7e1545a7780bf2a7b3\tliked_item\t42\t43\t0\t2025-10-06T00:33:07.740\tweb\thome\twww.example.com\tCutting board\t20.00\n2841d3a7aa1072fd832bcfaff1da68ae\tclicked_review\t3\t21\t0\t2025-10-06T00:33:01.586\tios\tfood\twww.example.com\tPasta Sauce\t8.00\n298b6dbff25518f55d7ab4b6811c7536\tclicked_review\t4\t21\t0\t2025-10-06T00:33:14.883\tweb\tfood\twww.example.com\tPasta Sauce\t8.00\n2ad1d64c51063b193e6e9083bb47a559\tliked_item\t36\t13\t0\t2025-10-06T00:33:10.814\tandroid\tapparel\twww.example.com\tJacket\t15.00\n3216be48d9e9e293af7bac6f87e5fef3\tclicked_item_description\t37\t33\t0\t2025-10-06T00:33:20.043\tandroid\telectronics\twww.example.com\tMouse\t15.00\n32e6c847d3e689845ee7c703a7741c25\tpurchased_item\t27\t13\t4\t2025-10-06T00:33:37.457\tandroid\tapparel\twww.example.com\tJacket\t15.00\n32faad102f4bee6648fd53161d9a5fe1\tpurchased_item\t22\t42\t5\t2025-10-06T00:33:06.729\tweb\thome\twww.example.com\tKettle\t15.00\n3614f9b682171382a1d3d1357050c804\tclicked_item_description\t17\t42\t0\t2025-10-06T00:33:50.787\tandroid\thome\twww.example.com\tKettle\t15.00\n37c13c80b8ff4a337f9fe76a936ef5c6\treviewed_item\t49\t52\t0\t2025-10-06T00:33:24.143\tios\tbooks\twww.example.com\tCookbook\t15.00\n37e8b02c0248768572812767b1302d7d\tclicked_review\t48\t42\t0\t2025-10-06T00:33:04.672\tweb\thome\twww.example.com\tKettle\t15.00\n381c4f3fb70050183e7541409eab714b\tliked_item\t32\t22\t0\t2025-10-06T00:33:26.207\tandroid\tfood\twww.example.com\tCake Mix\t12.00\n3d3188e2cbd3c9654280b592c59e46eb\treviewed_item\t13\t41\t0\t2025-10-06T00:33:37.401\tandroid\thome\twww.example.com\tDinner set\t30.00\n3dd20983b62acf328138087582d4aa55\tentered_payment_method\t24\t41\t0\t2025-10-06T00:33:26.228\tandroid\thome\twww.example.com\tDinner set\t30.00\n3e34c43ed002bddb99083b555aba5adc\tliked_item\t35\t53\t0\t2025-10-06T00:33:42.533\tweb\tbooks\twww.example.com\tLearning Python\t30.00\n3e58a94bb50a0a5b1a68d6f56a742b10\tpurchased_item\t35\t52\t2\t2025-10-06T00:33:41.501\tios\tbooks\twww.example.com\tCookbook\t15.00\n40f011c94e28c4955ec888b5532fb535\tpurchased_item\t13\t12\t2\t2025-10-06T00:32:58.533\tweb\tapparel\twww.example.com\tTShirt\t5.00\n430244042d023903b040bceabcd9d323\tclicked_item_description\t24\t52\t0\t2025-10-06T00:33:36.387\tandroid\tbooks\twww.example.com\tCookbook\t15.00\n4466a481f6dca53170b306ff0dcaa9fc\tentered_payment_method\t50\t52\t0\t2025-10-06T00:32:55.495\tios\tbooks\twww.example.com\tCookbook\t15.00\n475dad5aa54c99ab618155004aabf8a3\tliked_item\t45\t41\t0\t2025-10-06T00:33:41.510\tandroid\thome\twww.example.com\tDinner set\t30.00\n47a6bed63955025aae686f59d360e097\tpurchased_item\t30\t23\t5\t2025-10-06T00:33:23.119\tweb\tfood\twww.example.com\tNoodle\t6.00\n4b5f0ab64c54b87d0f56f43b409b9dae\tentered_payment_method\t29\t21\t0\t2025-10-06T00:32:54.475\tweb\tfood\twww.example.com\tPasta Sauce\t8.00\n4c0d18ba899c7436e88bacfc06e537a3\tclicked_review\t49\t12\t0\t2025-10-06T00:33:53.848\tandroid\tapparel\twww.example.com\tTShirt\t5.00\n4ce6a7980aeb27fa715ac38a65daea7f\tliked_item\t36\t22\t0\t2025-10-06T00:33:50.797\tandroid\tfood\twww.example.com\tCake Mix\t12.00\n4e29d567cbc3663843469acab69f194d\tpurchased_item\t28\t21\t2\t2025-10-06T00:33:25.175\tios\tfood\twww.example.com\tPasta Sauce\t8.00\n4f022e018d4bc0edd051cbf07335cd12\tentered_payment_method\t42\t53\t0\t2025-10-06T00:33:39.478\tweb\tbooks\twww.example.com\tLearning Python\t30.00\n53258ab8de172052f91cc802d6ca475e\tpurchased_item\t22\t12\t2\t2025-10-06T00:33:00.576\tios\tapparel\twww.example.com\tTShirt\t5.00\n541fdd57a354995f527102559b8333c8\tentered_payment_method\t27\t53\t0\t2025-10-06T00:33:16.983\tandroid\tbooks\twww.example.com\tLearning Python\t30.00\n557c2d6eeab0a94ff184fca338f0deb5\tliked_item\t31\t51\t0\t2025-10-06T00:33:08.778\tandroid\tbooks\twww.example.com\tData Sciences Book\t25.00\n59a259cf2e5f4a91f27fcc9e6f34ef1a\tpurchased_item\t15\t42\t5\t2025-10-06T00:33:34.353\tweb\thome\twww.example.com\tKettle\t15.00\n5b64f4ffc494a9acdcc572203ae9569c\tliked_item\t7\t43\t0\t2025-10-06T00:33:15.929\tandroid\thome\twww.example.com\tCutting board\t20.00\n5d879dc0245819f5c0747fa1a4039214\tclicked_item_description\t6\t42\t0\t2025-10-06T00:33:34.362\tandroid\thome\twww.example.com\tKettle\t15.00\n5d97ea4e94d28875f23131f679237f8a\tclicked_item_description\t12\t33\t0\t2025-10-06T00:33:22.088\tandroid\telectronics\twww.example.com\tMouse\t15.00\n5e44502fb11921c05dd04819b3ba8825\tclicked_review\t6\t33\t0\t2025-10-06T00:33:13.860\tandroid\telectronics\twww.example.com\tMouse\t15.00\n5f44f038b67de139e371ff78361d5234\tpurchased_item\t16\t41\t5\t2025-10-06T00:33:31.314\tios\thome\twww.example.com\tDinner set\t30.00\n5f82d1d81d7b2f22679862fe66e5bce2\tclicked_review\t19\t32\t0\t2025-10-06T00:33:11.838\tweb\telectronics\twww.example.com\tKeyboard\t20.00\n5fda7e3138d2ae59dbccbb3076cc2858\tentered_payment_method\t46\t41\t0\t2025-10-06T00:32:56.506\tios\thome\twww.example.com\tDinner set\t30.00\n60dd7dfddc3f97102038ce1b19b0dd9f\tclicked_review\t32\t22\t0\t2025-10-06T00:33:46.622\tios\tfood\twww.example.com\tCake Mix\t12.00\n63441ff3af266a8c9ec9619d478af4f3\tliked_item\t36\t33\t0\t2025-10-06T00:32:52.445\tandroid\telectronics\twww.example.com\tMouse\t15.00\n659d01aa737ef9321e0a3f7c15573b24\tclicked_review\t16\t11\t0\t2025-10-06T00:33:51.808\tandroid\tapparel\twww.example.com\tShirt\t10.00\n66cf532758542ad0cf4f9d72705d8b86\tentered_payment_method\t45\t53\t0\t2025-10-06T00:33:26.241\tweb\tbooks\twww.example.com\tLearning Python\t30.00\n673dd36aca8547468bc2a43c8600c73d\tliked_item\t18\t43\t0\t2025-10-06T00:33:49.767\tweb\thome\twww.example.com\tCutting board\t20.00\n67478a22e6c22bdecbd1193b8aaa300a\tpurchased_item\t43\t41\t5\t2025-10-06T00:33:28.263\tweb\thome\twww.example.com\tDinner set\t30.00\n69ed99bcb98ab491dc2adc9584a59e09\tclicked_review\t49\t33\t0\t2025-10-06T00:33:33.339\tios\telectronics\twww.example.com\tMouse\t15.00\n6a8049dc174825a6c8255dab42d70b0c\tentered_payment_method\t4\t33\t0\t2025-10-06T00:33:06.716\tandroid\telectronics\twww.example.com\tMouse\t15.00\n6a94b8639ce95e7c7fd1567ecf6d8036\tliked_item\t32\t51\t0\t2025-10-06T00:33:26.184\tweb\tbooks\twww.example.com\tData Sciences Book\t25.00\n6acb63f8ba526bf64aec51750aeaf427\treviewed_item\t34\t41\t0\t2025-10-06T00:32:59.543\tios\thome\twww.example.com\tDinner set\t30.00\n6b490047a9e383ace52c6d886dfce666\tclicked_item_description\t16\t53\t0\t2025-10-06T00:33:01.598\tios\tbooks\twww.example.com\tLearning Python\t30.00\n6f623094c9a652a4a55ae6c75b1cde8e\tclicked_item_description\t5\t11\t0\t2025-10-06T00:33:13.873\tweb\tapparel\twww.example.com\tShirt\t10.00\n713c420524bb585d41eee1d950812998\tclicked_item_description\t12\t13\t0\t2025-10-06T00:33:09.802\tios\tapparel\twww.example.com\tJacket\t15.00\n72a6b848c6f59677e980d8af0d7238d2\tclicked_review\t26\t32\t0\t2025-10-06T00:33:50.777\tios\telectronics\twww.example.com\tKeyboard\t20.00\n734cbac1ff3756146761223bdd87327d\tpurchased_item\t34\t11\t2\t2025-10-06T00:33:21.052\tandroid\tapparel\twww.example.com\tShirt\t10.00\n74bc859d79cf75a8232159c120ac3cea\tclicked_item_description\t26\t23\t0\t2025-10-06T00:33:30.290\tios\tfood\twww.example.com\tNoodle\t6.00\n7764c2a1cd31f1adba2e0cebe5d9b4cb\tentered_payment_method\t20\t43\t0\t2025-10-06T00:33:04.696\tweb\thome\twww.example.com\tCutting board\t20.00\n78e3e81ea0cfe43da8cfec7ce0f27bef\tpurchased_item\t43\t23\t1\t2025-10-06T00:32:51.434\tweb\tfood\twww.example.com\tNoodle\t6.00\n7a65b515c1878ffcb28c823dfe3b50be\treviewed_item\t39\t33\t0\t2025-10-06T00:33:49.745\tandroid\telectronics\twww.example.com\tMouse\t15.00\n7ce65fdfbaf7753d0bb9bf7f1ee4b569\tclicked_item_description\t3\t52\t0\t2025-10-06T00:33:00.565\tandroid\tbooks\twww.example.com\tCookbook\t15.00\n80970e4a7f3acb56a0852032e6350c60\tclicked_review\t13\t32\t0\t2025-10-06T00:33:15.960\tios\telectronics\twww.example.com\tKeyboard\t20.00\n819c50f21dbaa7b561b4fa04b74ca224\tentered_payment_method\t22\t13\t0\t2025-10-06T00:33:32.326\tios\tapparel\twww.example.com\tJacket\t15.00\n82677cb457b81b0393eee182a8c3e36f\treviewed_item\t10\t43\t0\t2025-10-06T00:33:23.131\tios\thome\twww.example.com\tCutting board\t20.00\n87d8d288855cc2ba790c2d55804f78ca\tpurchased_item\t45\t21\t3\t2025-10-06T00:33:22.066\tios\tfood\twww.example.com\tPasta Sauce\t8.00\n8919da4e738220d752791d756c4391ab\tclicked_item_description\t43\t52\t0\t2025-10-06T00:32:52.454\tweb\tbooks\twww.example.com\tCookbook\t15.00\n893452bf7f29d0c5ac12dcd3638c989d\tclicked_review\t44\t21\t0\t2025-10-06T00:32:54.485\tandroid\tfood\twww.example.com\tPasta Sauce\t8.00\n8de250b7a0cd38c30e7f8bbb1a65a293\tpurchased_item\t18\t23\t1\t2025-10-06T00:33:16.970\tweb\tfood\twww.example.com\tNoodle\t6.00\n8e2892654cf41dc7d6fefe283522f532\treviewed_item\t21\t52\t0\t2025-10-06T00:33:11.826\tweb\tbooks\twww.example.com\tCookbook\t15.00\n913fcc92217fc6f7fe55380ac39adbc3\tliked_item\t15\t43\t0\t2025-10-06T00:33:25.163\tandroid\thome\twww.example.com\tCutting board\t20.00\n938c3cc3a38ecb0bd1ab3c5d5f25d6b7\tliked_item\t2\t23\t0\t2025-10-06T00:33:43.569\tweb\tfood\twww.example.com\tNoodle\t6.00\n95703dd414f45a798fe7c49949d6e0f1\tliked_item\t17\t12\t0\t2025-10-06T00:33:00.556\tios\tapparel\twww.example.com\tTShirt\t5.00\n9598585d1cc3048c3212876854a457ed\tclicked_item_description\t18\t33\t0\t2025-10-06T00:33:49.675\tandroid\telectronics\twww.example.com\tMouse\t15.00\n95cc16a42a482c15ccd0d9bd07365342\tliked_item\t22\t43\t0\t2025-10-06T00:33:43.581\tandroid\thome\twww.example.com\tCutting board\t20.00\n96a9ea0111c3b5db8a2e157d1d81df0c\tliked_item\t37\t42\t0\t2025-10-06T00:33:25.153\tweb\thome\twww.example.com\tKettle\t15.00\n9ced3a4fdf748fc864f7cc9429a6ebe9\tpurchased_item\t1\t42\t4\t2025-10-06T00:32:53.464\tweb\thome\twww.example.com\tKettle\t15.00\n9edde8ee4fe04eb606f4f5f7bd7b7a02\tclicked_review\t18\t42\t0\t2025-10-06T00:33:45.612\tandroid\thome\twww.example.com\tKettle\t15.00\na5e648b483fba85d0611473b1de1e158\treviewed_item\t12\t13\t0\t2025-10-06T00:33:26.196\tweb\tapparel\twww.example.com\tJacket\t15.00\na74de74a1e34271f214b917bae6d6188\treviewed_item\t36\t51\t0\t2025-10-06T00:33:44.592\tios\tbooks\twww.example.com\tData Sciences Book\t25.00\na8832b877cb3efbbe601245ec3fb220d\tentered_payment_method\t7\t12\t0\t2025-10-06T00:33:04.647\tios\tapparel\twww.example.com\tTShirt\t5.00\naa08322aae931013e427b9c4fab81dae\tclicked_item_description\t42\t42\t0\t2025-10-06T00:33:15.894\tandroid\thome\twww.example.com\tKettle\t15.00\nace6a7df0be76614636837ef0f4f967f\treviewed_item\t6\t31\t0\t2025-10-06T00:33:51.818\tweb\telectronics\twww.example.com\tHead phone\t25.00\nb717746e98380013cccc73192cfd2c7d\tentered_payment_method\t29\t42\t0\t2025-10-06T00:33:53.860\tweb\thome\twww.example.com\tKettle\t15.00\nb89fa688b5fab7c9080a7f391113829f\treviewed_item\t4\t33\t0\t2025-10-06T00:33:49.733\tios\telectronics\twww.example.com\tMouse\t15.00\nbb17bf5a0cd404e3dfd5fb494b66e700\treviewed_item\t39\t33\t0\t2025-10-06T00:33:22.077\tios\telectronics\twww.example.com\tMouse\t15.00\nbccb5bdad2d4a8d779a0229de2f36973\tclicked_item_description\t25\t12\t0\t2025-10-06T00:33:48.654\tios\tapparel\twww.example.com\tTShirt\t5.00\nbdc67bef3cc0627d816357f79d35c999\tclicked_review\t46\t22\t0\t2025-10-06T00:33:15.917\tweb\tfood\twww.example.com\tCake Mix\t12.00\nbe83be36ed7c94e6ddfe04d965a09e85\tclicked_review\t3\t31\t0\t2025-10-06T00:33:27.253\tweb\telectronics\twww.example.com\tHead phone\t25.00\nbed09e4262b5e2ae1e6cb718ad10a382\tliked_item\t18\t31\t0\t2025-10-06T00:33:15.949\tios\telectronics\twww.example.com\tHead phone\t25.00\nbfb0bdc259b72450120b9f7cba9cea78\tclicked_review\t3\t33\t0\t2025-10-06T00:33:05.707\tweb\telectronics\twww.example.com\tMouse\t15.00\nbfde409e6690326c2697e425e43e81d7\tclicked_review\t3\t51\t0\t2025-10-06T00:33:19.010\tweb\tbooks\twww.example.com\tData Sciences Book\t25.00\nc2a855433fee03a60777efe335e7ce9d\tentered_payment_method\t28\t42\t0\t2025-10-06T00:33:47.642\tios\thome\twww.example.com\tKettle\t15.00\nc325357b5a6d52a1cc8201448eb530f3\treviewed_item\t23\t12\t0\t2025-10-06T00:33:23.108\tandroid\tapparel\twww.example.com\tTShirt\t5.00\nc3797f11192045e73db416873b2343be\tclicked_review\t17\t11\t0\t2025-10-06T00:33:20.034\tios\tapparel\twww.example.com\tShirt\t10.00\nc500604764a3c67e592cc30dfc904480\tclicked_review\t8\t22\t0\t2025-10-06T00:33:55.880\tweb\tfood\twww.example.com\tCake Mix\t12.00\ncf391a81139b45bd64b9e9c8db7f0f03\tclicked_review\t12\t41\t0\t2025-10-06T00:33:45.601\tandroid\thome\twww.example.com\tDinner set\t30.00\nd00ecfef915cd0e80babdc85179c02bb\tliked_item\t48\t22\t0\t2025-10-06T00:33:29.277\tandroid\tfood\twww.example.com\tCake Mix\t12.00\nd395df99d176ef0598f3d9817ac6a152\tpurchased_item\t12\t33\t1\t2025-10-06T00:33:35.374\tios\telectronics\twww.example.com\tMouse\t15.00\nd43612e0c5957927c88dfaf6c091bcd9\tclicked_item_description\t5\t51\t0\t2025-10-06T00:33:38.468\tios\tbooks\twww.example.com\tData Sciences Book\t25.00\nd5651830f48db787cee9f1fc2895595f\tliked_item\t29\t21\t0\t2025-10-06T00:33:08.764\tios\tfood\twww.example.com\tPasta Sauce\t8.00\nd78c509805cb6dfcd737c96bc292c201\tliked_item\t43\t43\t0\t2025-10-06T00:33:54.869\tios\thome\twww.example.com\tCutting board\t20.00\ne1082d165bdbad5ec25838c621ed7312\treviewed_item\t29\t13\t0\t2025-10-06T00:33:42.522\tweb\tapparel\twww.example.com\tJacket\t15.00\ne3dbd050dbe8665359eccc1d9601e7a7\tliked_item\t48\t31\t0\t2025-10-06T00:33:03.624\tandroid\telectronics\twww.example.com\tHead phone\t25.00\ne421be8bf90487ecd3722f69b8186cec\tclicked_item_description\t30\t13\t0\t2025-10-06T00:33:30.303\tandroid\tapparel\twww.example.com\tJacket\t15.00\ne74a47b647509c9015362a5bc623ecd9\tclicked_item_description\t26\t53\t0\t2025-10-06T00:33:43.558\tios\tbooks\twww.example.com\tLearning Python\t30.00\ned9a596f35a1d046c32e06a95c6b1ba6\tpurchased_item\t14\t13\t2\t2025-10-06T00:33:43.546\tandroid\tapparel\twww.example.com\tJacket\t15.00\nedf184c2553174f4390e6ec08a2fa719\tentered_payment_method\t48\t13\t0\t2025-10-06T00:33:12.850\tandroid\tapparel\twww.example.com\tJacket\t15.00\nef9b2b8b907c33950386d8dc6328793e\tclicked_item_description\t45\t43\t0\t2025-10-06T00:33:02.610\tios\thome\twww.example.com\tCutting board\t20.00\nf05bd668a062352e2c3683c2df530847\tliked_item\t36\t41\t0\t2025-10-06T00:33:40.490\tios\thome\twww.example.com\tDinner set\t30.00\nf10e356948c79d4020111affb33bdd4e\tliked_item\t45\t13\t0\t2025-10-06T00:33:07.750\tandroid\tapparel\twww.example.com\tJacket\t15.00\nf2a071fb4828e656f30187f59010b485\tclicked_item_description\t39\t23\t0\t2025-10-06T00:33:03.638\tios\tfood\twww.example.com\tNoodle\t6.00\nf93e4bff4b83e95fb290075e161c6eed\tliked_item\t45\t53\t0\t2025-10-06T00:33:15.938\tweb\tbooks\twww.example.com\tLearning Python\t30.00\n"
+          },
+          {
+            "type": "TEXT",
+            "data": "Fail to run sql command: SELECT * FROM sink_table\n"
+          },
+          {
+            "type": "ANGULAR",
+            "data": "<div class='container ng-scope' style='padding-left:0px;padding-right:0px;'>\n    <div class='panel panel-danger'>\n        <div class='panel-heading' ng-click='isOpen=!isOpen' ng-init='isOpen=false' style=\"cursor:pointer\">\n            <div class='plainTextContainer' style='font-weight:bolder'><i class=\"fa fa-caret-right fa-fw\" style=\"padding-right:7px;transition:all 0.3s;{{isOpen?'transform:rotate(90deg);transform-origin:25% 45%':''}}\"></i>Job was cancelled.</div>\n        </div>\n        <div class='panel-collapse' uib-collapse='!isOpen'>\n            <div class='text' style='max-height:300px;overflow:auto;padding:10px'>java.io.IOException: Fail to run stream sql job\n\tat org.apache.zeppelin.flink.sql.AbstractStreamSqlJob.run(AbstractStreamSqlJob.java:172)\n\tat org.apache.zeppelin.flink.sql.AbstractStreamSqlJob.run(AbstractStreamSqlJob.java:105)\n\tat org.apache.zeppelin.flink.FlinkStreamSqlInterpreter.callInnerSelect(FlinkStreamSqlInterpreter.java:89)\n\tat org.apache.zeppelin.flink.FlinkSqlInterrpeter.callSelect(FlinkSqlInterrpeter.java:503)\n\tat org.apache.zeppelin.flink.FlinkSqlInterrpeter.callCommand(FlinkSqlInterrpeter.java:266)\n\tat org.apache.zeppelin.flink.FlinkSqlInterrpeter.runSqlList(FlinkSqlInterrpeter.java:160)\n\tat org.apache.zeppelin.flink.FlinkSqlInterrpeter.internalInterpret(FlinkSqlInterrpeter.java:112)\n\tat org.apache.zeppelin.interpreter.AbstractInterpreter.interpret(AbstractInterpreter.java:47)\n\tat org.apache.zeppelin.interpreter.LazyOpenInterpreter.interpret(LazyOpenInterpreter.java:110)\n\tat org.apache.zeppelin.interpreter.remote.RemoteInterpreterServer$InterpretJob.jobRun(RemoteInterpreterServer.java:852)\n\tat org.apache.zeppelin.interpreter.remote.RemoteInterpreterServer$InterpretJob.jobRun(RemoteInterpreterServer.java:744)\n\tat org.apache.zeppelin.scheduler.Job.run(Job.java:172)\n\tat org.apache.zeppelin.scheduler.AbstractScheduler.runJob(AbstractScheduler.java:132)\n\tat org.apache.zeppelin.scheduler.ParallelScheduler.lambda$runJobInScheduler$0(ParallelScheduler.java:46)\n\tat java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1128)\n\tat java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:628)\n\tat java.base/java.lang.Thread.run(Thread.java:829)\nCaused by: org.apache.flink.client.program.ProgramInvocationException: Job failed (JobID: 211c20f57314155491ed4a61a15031dd)\n\tat org.apache.flink.client.deployment.ClusterClientJobClientAdapter.lambda$getJobExecutionResult$6(ClusterClientJobClientAdapter.java:125)\n\tat java.base/java.util.concurrent.CompletableFuture$UniApply.tryFire(CompletableFuture.java:642)\n\tat java.base/java.util.concurrent.CompletableFuture.postComplete(CompletableFuture.java:506)\n\tat java.base/java.util.concurrent.CompletableFuture.complete(CompletableFuture.java:2079)\n\tat org.apache.flink.runtime.concurrent.FutureUtils.lambda$retryOperationWithDelay$9(FutureUtils.java:394)\n\tat java.base/java.util.concurrent.CompletableFuture.uniWhenComplete(CompletableFuture.java:859)\n\tat java.base/java.util.concurrent.CompletableFuture$UniWhenComplete.tryFire(CompletableFuture.java:837)\n\tat java.base/java.util.concurrent.CompletableFuture.postComplete(CompletableFuture.java:506)\n\tat java.base/java.util.concurrent.CompletableFuture.complete(CompletableFuture.java:2079)\n\tat org.apache.flink.client.program.rest.RestClusterClient.lambda$pollResourceAsync$24(RestClusterClient.java:670)\n\tat java.base/java.util.concurrent.CompletableFuture.uniWhenComplete(CompletableFuture.java:859)\n\tat java.base/java.util.concurrent.CompletableFuture$UniWhenComplete.tryFire(CompletableFuture.java:837)\n\tat java.base/java.util.concurrent.CompletableFuture.postComplete(CompletableFuture.java:506)\n\tat java.base/java.util.concurrent.CompletableFuture.complete(CompletableFuture.java:2079)\n\tat org.apache.flink.runtime.concurrent.FutureUtils.lambda$retryOperationWithDelay$9(FutureUtils.java:394)\n\tat java.base/java.util.concurrent.CompletableFuture.uniWhenComplete(CompletableFuture.java:859)\n\tat java.base/java.util.concurrent.CompletableFuture$UniWhenComplete.tryFire(CompletableFuture.java:837)\n\tat java.base/java.util.concurrent.CompletableFuture.postComplete(CompletableFuture.java:506)\n\tat java.base/java.util.concurrent.CompletableFuture.postFire(CompletableFuture.java:610)\n\tat java.base/java.util.concurrent.CompletableFuture$UniCompose.tryFire(CompletableFuture.java:1085)\n\tat java.base/java.util.concurrent.CompletableFuture$Completion.run(CompletableFuture.java:478)\n\t... 3 more\nCaused by: org.apache.flink.runtime.client.JobCancellationException: Job was cancelled.\n\tat org.apache.flink.runtime.jobmaster.JobResult.toJobExecutionResult(JobResult.java:146)\n\tat org.apache.flink.client.deployment.ClusterClientJobClientAdapter.lambda$getJobExecutionResult$6(ClusterClientJobClientAdapter.java:123)\n\t... 23 more\n</div>\n        </div>\n    </div>\n</div>\n"
+          }
+        ]
+      }
+    },
+    {
+      "text": "%md\n## Congratulations!\n### You have successfully completed the following:\n### 1.  Built a real-time streaming analytics pipeline with Kinesis Data Streams in Managed Apache Flink Studio using Apache Flink and Apache Zeppelin by ingesting clickstream data and enriching the clickstream data with catalog data stored in Amazon S3. \n### 2.  Performed analysis on the enriched data to identify and visualize the sales per category in real time.\n### 3.  Outputted the data to a Kinesis data stream for further downstream processing depending on operational needs.\n\n### You will now return to the lab instructions to continue to the optional task (Understanding in-memory table creation in AWS Glue Data Calalog) or end the lab.\n",
+      "user": "anonymous",
+      "dateUpdated": "2025-10-06T00:13:34+0000",
+      "progress": 0,
+      "config": {
+        "tableHide": false,
+        "editorSetting": {
+          "language": "markdown",
+          "editOnDblClick": true,
+          "completionKey": "TAB",
+          "completionSupport": false
+        },
+        "colWidth": 12,
+        "editorMode": "ace/mode/markdown",
+        "fontSize": 9,
+        "editorHide": true,
+        "results": {},
+        "enabled": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "HTML",
+            "data": "<div class=\"markdown-body\">\n<h2>Congratulations!</h2>\n<h3>You have successfully completed the following:</h3>\n<h3>1.  Built a real-time streaming analytics pipeline with Kinesis Data Streams in Managed Apache Flink Studio using Apache Flink and Apache Zeppelin by ingesting clickstream data and enriching the clickstream data with catalog data stored in Amazon S3.</h3>\n<h3>2.  Performed analysis on the enriched data to identify and visualize the sales per category in real time.</h3>\n<h3>3.  Outputted the data to a Kinesis data stream for further downstream processing depending on operational needs.</h3>\n<h3>You will now return to the lab instructions to continue to the optional task (Understanding in-memory table creation in AWS Glue Data Calalog) or end the lab.</h3>\n\n</div>"
+          }
+        ]
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1759709614640_925070968",
+      "id": "paragraph_1661797899386_763882426",
+      "dateCreated": "2025-10-06T00:13:34+0000",
+      "status": "READY",
+      "$$hashKey": "object:188"
+    }
+  ],
+  "name": "Lab_Kinesis_Analytics",
+  "id": "2M7CJG9G8",
+  "defaultInterpreterGroup": "flink",
+  "version": "0.9.0",
+  "noteParams": {},
+  "noteForms": {},
+  "angularObjects": {},
+  "config": {
+    "isZeppelinNotebookCronEnable": false,
+    "looknfeel": "default",
+    "personalizedMode": "false"
+  },
+  "info": {},
+  "path": "/Lab_Kinesis_Analytics"
+}
