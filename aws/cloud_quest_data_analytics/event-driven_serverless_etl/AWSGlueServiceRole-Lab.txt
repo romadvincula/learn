@@ -1,0 +1,151 @@
+===
+
+AWSGlueServiceRole
+
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "glue:*",
+                "s3:GetBucketLocation",
+                "s3:ListBucket",
+                "s3:ListAllMyBuckets",
+                "s3:GetBucketAcl",
+                "ec2:DescribeVpcEndpoints",
+                "ec2:DescribeRouteTables",
+                "ec2:CreateNetworkInterface",
+                "ec2:DeleteNetworkInterface",
+                "ec2:DescribeNetworkInterfaces",
+                "ec2:DescribeSecurityGroups",
+                "ec2:DescribeSubnets",
+                "ec2:DescribeVpcAttribute",
+                "iam:ListRolePolicies",
+                "iam:GetRole",
+                "iam:GetRolePolicy",
+                "cloudwatch:PutMetricData"
+            ],
+            "Resource": [
+                "*"
+            ]
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "s3:CreateBucket"
+            ],
+            "Resource": [
+                "arn:aws:s3:::aws-glue-*"
+            ]
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "s3:GetObject",
+                "s3:PutObject",
+                "s3:DeleteObject"
+            ],
+            "Resource": [
+                "arn:aws:s3:::aws-glue-*/*",
+                "arn:aws:s3:::*/*aws-glue-*/*"
+            ]
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "s3:GetObject"
+            ],
+            "Resource": [
+                "arn:aws:s3:::crawler-public*",
+                "arn:aws:s3:::aws-glue-*"
+            ]
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "logs:CreateLogGroup",
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+            ],
+            "Resource": [
+                "arn:aws:logs:*:*:*:/aws-glue/*"
+            ]
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "ec2:CreateTags",
+                "ec2:DeleteTags"
+            ],
+            "Condition": {
+                "ForAllValues:StringEquals": {
+                    "aws:TagKeys": [
+                        "aws-glue-service-resource"
+                    ]
+                }
+            },
+            "Resource": [
+                "arn:aws:ec2:*:*:network-interface/*",
+                "arn:aws:ec2:*:*:security-group/*",
+                "arn:aws:ec2:*:*:instance/*"
+            ]
+        }
+    ]
+}
+
+===
+
+gluesetuproleDefaultPolicy
+
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Action": [
+                "ec2:Describe*",
+                "redshift-data:*",
+                "redshift-serverless:*",
+                "redshift:*",
+                "s3:*",
+                "secretsmanager:*"
+            ],
+            "Resource": "*",
+            "Effect": "Allow"
+        },
+        {
+            "Condition": {
+                "StringLike": {
+                    "iam:PassedToService": [
+                        "glue.amazonaws.com"
+                    ]
+                }
+            },
+            "Action": "iam:PassRole",
+            "Resource": "arn:aws:iam::*:role/AWSGlueServiceRole-Lab",
+            "Effect": "Allow"
+        },
+        {
+            "Action": "*",
+            "Resource": [
+                "arn:aws:lambda:us-east-1:019964248372:function:gbl_lab_monitoring",
+                "arn:aws:iam::019964248372:role/LabStack-91226fc6-8d99-4d-GblLabMonitoringgbllabmon-pce4CYoZBtZJ",
+                "arn:aws:events:us-east-1:019964248372:rule/LabStack-91226fc6-8d99-4d-GblLabMonitoringmonitorin-gtnOowGPm48C",
+                "arn:aws:events:us-east-1:019964248372:rule/LabStack-91226fc6-8d99-4d-GblLabMonitoringmonitorin-6uR505nxPt0D",
+                "arn:aws:events:us-east-1:019964248372:rule/LabStack-91226fc6-8d99-4d-GblLabMonitoringmonitorin-vqmJwTCh4JPE",
+                "arn:aws:events:us-east-1:019964248372:rule/LabStack-91226fc6-8d99-4d-GblLabMonitoringmonitorin-b1iN3BpoNg4h",
+                "arn:aws:events:us-east-1:019964248372:rule/LabStack-91226fc6-8d99-4d-GblLabMonitoringmonitorin-9MKXJSiTsUbC",
+                "arn:aws:events:us-east-1:019964248372:rule/LabStack-91226fc6-8d99-4d-GblLabMonitoringmonitorin-nh9ThAIFIwPQ"
+            ],
+            "Effect": "Deny"
+        },
+        {
+            "Action": "lambda:PutProvisionedConcurrencyConfig",
+            "Resource": "*",
+            "Effect": "Deny"
+        }
+    ]
+}
+
+===
+

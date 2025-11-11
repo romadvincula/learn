@@ -1,0 +1,98 @@
+===
+
+firehose
+
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Action": [
+                "glue:GetTable",
+                "glue:GetTableVersion",
+                "glue:GetTableVersions"
+            ],
+            "Resource": "*",
+            "Effect": "Allow",
+            "Sid": "GlueAccess"
+        },
+        {
+            "Action": [
+                "s3:AbortMultipartUpload",
+                "s3:GetBucketLocation",
+                "s3:GetObject",
+                "s3:ListBucket",
+                "s3:ListBucketMultipartUploads",
+                "s3:PutObject"
+            ],
+            "Resource": "*",
+            "Effect": "Allow",
+            "Sid": "S3Access"
+        },
+        {
+            "Action": [
+                "lambda:GetFunctionConfiguration",
+                "lambda:InvokeFunction"
+            ],
+            "Resource": "*",
+            "Effect": "Allow",
+            "Sid": "LambdaAccess"
+        },
+        {
+            "Action": [
+                "kms:Decrypt",
+                "kms:GenerateDataKey"
+            ],
+            "Resource": "*",
+            "Effect": "Allow",
+            "Sid": "KMSAccess"
+        },
+        {
+            "Action": "logs:PutLogEvents",
+            "Resource": "*",
+            "Effect": "Allow",
+            "Sid": "CloudWatchLogsAccess"
+        },
+        {
+            "Action": [
+                "kinesis:DescribeStream",
+                "kinesis:GetRecords",
+                "kinesis:GetShardIterator",
+                "kinesis:ListShards"
+            ],
+            "Resource": "*",
+            "Effect": "Allow",
+            "Sid": "KinesisAccess"
+        }
+    ]
+}
+
+===
+
+KinesisFirehoseRoleDefaultPolicy
+
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Action": "*",
+            "Resource": [
+                "arn:aws:lambda:us-east-1:019964248372:function:gbl_lab_monitoring",
+                "arn:aws:iam::019964248372:role/LabStack-91226fc6-8d99-4d-GblLabMonitoringgbllabmon-JHK8XYsC4STr",
+                "arn:aws:events:us-east-1:019964248372:rule/LabStack-91226fc6-8d99-4d-GblLabMonitoringmonitorin-D6mI4sn6dQnC",
+                "arn:aws:events:us-east-1:019964248372:rule/LabStack-91226fc6-8d99-4d-GblLabMonitoringmonitorin-N0yqlu5EZAHD",
+                "arn:aws:events:us-east-1:019964248372:rule/LabStack-91226fc6-8d99-4d-GblLabMonitoringmonitorin-7uPHb1hVv1tX",
+                "arn:aws:events:us-east-1:019964248372:rule/LabStack-91226fc6-8d99-4d-GblLabMonitoringmonitorin-SrtV3it0L4dy",
+                "arn:aws:events:us-east-1:019964248372:rule/LabStack-91226fc6-8d99-4d-GblLabMonitoringmonitorin-g77b8ioU4hLc"
+            ],
+            "Effect": "Deny"
+        },
+        {
+            "Action": "lambda:PutProvisionedConcurrencyConfig",
+            "Resource": "*",
+            "Effect": "Deny"
+        }
+    ]
+}
+
+===
+

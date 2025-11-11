@@ -1,0 +1,42 @@
+s3 Buckets:
+landing-bucket
+
+staging-bucket
+
+consumption-bucket
+
+
+
+Glue ETL Jobs:
+
+JSON2Parquet-job
+	
+data-normalization-job
+
+
+
+
+Glue Crawlers:
+
+s3_crawler_raw
+
+s3_crawler_processed
+
+
+State Machine Workflow: data-workflow
+arn:aws:states:us-east-1:stateMachine:data-workflow
+
+
+
+start_step_function Lambda Env Var:
+STATE_MACHINE_ARN
+arn:aws:states:us-east-1:stateMachine:data-workflow
+
+
+
+shipping_schedule_application Lambda Env Var:
+BUCKET_NAME
+landing-bucket
+
+
+

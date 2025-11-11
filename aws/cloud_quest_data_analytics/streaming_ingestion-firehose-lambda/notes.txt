@@ -1,0 +1,6 @@
+
+Firehose Name:
+SI-Firehose
+
+S3 Partition Key:
+station-data/station_id=!{partitionKeyFromQuery:station_id}/!{partitionKeyFromQuery:year}/!{partitionKeyFromQuery:month}/!{partitionKeyFromQuery:day}/!{partitionKeyFromQuery:hour}/

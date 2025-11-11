@@ -1,0 +1,188 @@
+=== 
+
+AWSLambdaBasicExecutionRole
+
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "logs:CreateLogGroup",
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+            ],
+            "Resource": "*"
+        }
+    ]
+}
+
+===
+
+AWSQuicksightAthenaAccess
+
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "athena:BatchGetQueryExecution",
+                "athena:CancelQueryExecution",
+                "athena:GetCatalogs",
+                "athena:GetExecutionEngine",
+                "athena:GetExecutionEngines",
+                "athena:GetNamespace",
+                "athena:GetNamespaces",
+                "athena:GetQueryExecution",
+                "athena:GetQueryExecutions",
+                "athena:GetQueryResults",
+                "athena:GetQueryResultsStream",
+                "athena:GetTable",
+                "athena:GetTables",
+                "athena:ListQueryExecutions",
+                "athena:RunQuery",
+                "athena:StartQueryExecution",
+                "athena:StopQueryExecution",
+                "athena:ListWorkGroups",
+                "athena:ListEngineVersions",
+                "athena:GetWorkGroup",
+                "athena:GetDataCatalog",
+                "athena:GetDatabase",
+                "athena:GetTableMetadata",
+                "athena:ListDataCatalogs",
+                "athena:ListDatabases",
+                "athena:ListTableMetadata"
+            ],
+            "Resource": [
+                "*"
+            ]
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "glue:CreateDatabase",
+                "glue:DeleteDatabase",
+                "glue:GetCatalog",
+                "glue:GetCatalogs",
+                "glue:GetDatabase",
+                "glue:GetDatabases",
+                "glue:UpdateDatabase",
+                "glue:CreateTable",
+                "glue:DeleteTable",
+                "glue:BatchDeleteTable",
+                "glue:UpdateTable",
+                "glue:GetTable",
+                "glue:GetTables",
+                "glue:BatchCreatePartition",
+                "glue:CreatePartition",
+                "glue:DeletePartition",
+                "glue:BatchDeletePartition",
+                "glue:UpdatePartition",
+                "glue:GetPartition",
+                "glue:GetPartitions",
+                "glue:BatchGetPartition"
+            ],
+            "Resource": [
+                "*"
+            ]
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "s3:GetBucketLocation",
+                "s3:GetObject",
+                "s3:ListBucket",
+                "s3:ListBucketMultipartUploads",
+                "s3:ListMultipartUploadParts",
+                "s3:AbortMultipartUpload",
+                "s3:CreateBucket",
+                "s3:PutObject",
+                "s3:PutBucketPublicAccessBlock"
+            ],
+            "Resource": [
+                "arn:aws:s3:::aws-athena-query-results-*"
+            ]
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "lakeformation:GetDataAccess"
+            ],
+            "Resource": [
+                "*"
+            ]
+        }
+    ]
+}
+
+===
+
+quickSightLabRoleDefaultPolicy
+
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Action": "*",
+            "Resource": [
+                "arn:aws:lambda:us-east-1:496999963738:function:gbl_lab_monitoring",
+                "arn:aws:iam::496999963738:role/LabStack-91226fc6-8d99-4d-GblLabMonitoringgbllabmon-sZ2PJhnLia7C",
+                "arn:aws:events:us-east-1:496999963738:rule/LabStack-91226fc6-8d99-4d-GblLabMonitoringmonitorin-2bykCTLa1ylu",
+                "arn:aws:events:us-east-1:496999963738:rule/LabStack-91226fc6-8d99-4d-GblLabMonitoringmonitorin-HeYhABd8xpPl",
+                "arn:aws:events:us-east-1:496999963738:rule/LabStack-91226fc6-8d99-4d-GblLabMonitoringmonitorin-Cl5IcQBU8nxj",
+                "arn:aws:events:us-east-1:496999963738:rule/LabStack-91226fc6-8d99-4d-GblLabMonitoringmonitorin-E76yDYlVRyfp",
+                "arn:aws:events:us-east-1:496999963738:rule/LabStack-91226fc6-8d99-4d-GblLabMonitoringmonitorin-z3zH7eRPXCXF",
+                "arn:aws:events:us-east-1:496999963738:rule/LabStack-91226fc6-8d99-4d-GblLabMonitoringmonitorin-gLkOIQ9AWlW6"
+            ],
+            "Effect": "Deny"
+        },
+        {
+            "Action": "lambda:PutProvisionedConcurrencyConfig",
+            "Resource": "*",
+            "Effect": "Deny"
+        }
+    ]
+}
+
+===
+
+QuicksightServicePolicy
+
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Action": "s3:ListAllMyBuckets",
+            "Resource": "*",
+            "Effect": "Allow"
+        },
+        {
+            "Action": [
+                "s3:AbortMultipartUpload",
+                "s3:CreateBucket",
+                "s3:GetBucketAcl",
+                "s3:GetBucketLocation",
+                "s3:GetBucketPolicy",
+                "s3:GetBucketPolicyStatus",
+                "s3:GetBucketPublicAccessBlock",
+                "s3:GetObject",
+                "s3:GetObjectVersion",
+                "s3:ListBucket",
+                "s3:ListBucketMultipartUploads",
+                "s3:ListMultipartUploadParts",
+                "s3:PutBucketPublicAccessBlock",
+                "s3:PutObject"
+            ],
+            "Resource": [
+                "arn:aws:s3:::consumption-bucket-bf4b9f20",
+                "arn:aws:s3:::query-bucket-bf4b9f20",
+                "arn:aws:s3:::consumption-bucket-bf4b9f20/*",
+                "arn:aws:s3:::query-bucket-bf4b9f20/*"
+            ],
+            "Effect": "Allow"
+        }
+    ]
+}
+
+===

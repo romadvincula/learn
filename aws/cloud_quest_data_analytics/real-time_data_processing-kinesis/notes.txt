@@ -1,0 +1,38 @@
+
+
+
+AnomalyDetection.jar
+
+
+
+http://3.82.102.159/kinesis
+
+
+
+Solution Sample Files:
+https://github.com/aws-samples/amazon-kinesis-data-analytics-examples/tree/master/AnomalyDetection/RandomCutForest
+
+
+
+Env Var for AnomalyMessageDeliveryFunction:
+OUTPUT_TABLE_NAME
+WindDataTable
+SNS_TOPIC_ARN
+arn:aws:sns:us-east-1:AnomalyNotification
+
+
+
+Env Var for AnalyticsDestinationFunction:
+OUTPUT_TABLE_NAME
+WindDataTable
+
+
+
+DIY
+Apache Flink: CalculateMaxSpeed
+
+JAR:
+MaxWindSpeed.jar
+
+Kinesis Stream Output:
+MaxWindSpeed

@@ -1,0 +1,35 @@
+import sys
+from awsglue.transforms import *
+from awsglue.utils import getResolvedOptions
+from pyspark.context import SparkContext
+from awsglue.context import GlueContext
+from awsglue.job import Job
+from awsgluedq.transforms import EvaluateDataQuality
+
+args = getResolvedOptions(sys.argv, ['JOB_NAME'])
+sc = SparkContext()
+glueContext = GlueContext(sc)
+spark = glueContext.spark_session
+job = Job(glueContext)
+job.init(args['JOB_NAME'], args)
+
+# Default ruleset used by all target nodes with data quality enabled
+DEFAULT_DATA_QUALITY_RULESET = """
+    Rules = [
+        ColumnCount > 0
+    ]
+"""
+
+# Script generated for node AWS Glue Data Catalog
+AWSGlueDataCatalog_node1762314289802 = glueContext.create_dynamic_frame.from_catalog(database="batch-db", table_name="sales_transactions", transformation_ctx="AWSGlueDataCatalog_node1762314289802")
+
+# Script generated for node Change Schema
+ChangeSchema_node1762314323492 = ApplyMapping.apply(frame=AWSGlueDataCatalog_node1762314289802, mappings=[("transaction_id", "int", "transaction_id", "int"), ("transaction_date", "date", "transaction_date", "date"), ("product_price", "decimal", "product_price", "decimal"), ("customer_id", "int", "customer_id", "int"), ("product_name", "string", "product_name", "string")], transformation_ctx="ChangeSchema_node1762314323492")
+
+# Script generated for node Amazon S3
+EvaluateDataQuality().process_rows(frame=ChangeSchema_node1762314323492, ruleset=DEFAULT_DATA_QUALITY_RULESET, publishing_options={"dataQualityEvaluationContext": "EvaluateDataQuality_node1762314277135", "enableDataQualityResultsPublishing": False}, additional_options={"dataQualityResultsPublishing.strategy": "BEST_EFFORT", "observations.scope": "ALL"})
+AmazonS3_node1762314363722 = glueContext.getSink(path="s3://raw-bucket-0b39edf0", connection_type="s3", updateBehavior="LOG", partitionKeys=[], enableUpdateCatalog=True, transformation_ctx="AmazonS3_node1762314363722")
+AmazonS3_node1762314363722.setCatalogInfo(catalogDatabase="batch-db",catalogTableName="transactions")
+AmazonS3_node1762314363722.setFormat("glueparquet", compression="snappy")
+AmazonS3_node1762314363722.writeFrame(ChangeSchema_node1762314323492)
+job.commit()

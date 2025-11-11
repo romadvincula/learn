@@ -1,0 +1,228 @@
+===
+
+AmazonDynamoDBFullAccess
+
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Action": [
+                "dynamodb:*",
+                "dax:*",
+                "application-autoscaling:DeleteScalingPolicy",
+                "application-autoscaling:DeregisterScalableTarget",
+                "application-autoscaling:DescribeScalableTargets",
+                "application-autoscaling:DescribeScalingActivities",
+                "application-autoscaling:DescribeScalingPolicies",
+                "application-autoscaling:PutScalingPolicy",
+                "application-autoscaling:RegisterScalableTarget",
+                "cloudwatch:DeleteAlarms",
+                "cloudwatch:DescribeAlarmHistory",
+                "cloudwatch:DescribeAlarms",
+                "cloudwatch:DescribeAlarmsForMetric",
+                "cloudwatch:GetMetricStatistics",
+                "cloudwatch:ListMetrics",
+                "cloudwatch:PutMetricAlarm",
+                "cloudwatch:GetMetricData",
+                "datapipeline:ActivatePipeline",
+                "datapipeline:CreatePipeline",
+                "datapipeline:DeletePipeline",
+                "datapipeline:DescribeObjects",
+                "datapipeline:DescribePipelines",
+                "datapipeline:GetPipelineDefinition",
+                "datapipeline:ListPipelines",
+                "datapipeline:PutPipelineDefinition",
+                "datapipeline:QueryObjects",
+                "ec2:DescribeVpcs",
+                "ec2:DescribeSubnets",
+                "ec2:DescribeSecurityGroups",
+                "iam:GetRole",
+                "iam:ListRoles",
+                "kms:DescribeKey",
+                "kms:ListAliases",
+                "sns:CreateTopic",
+                "sns:DeleteTopic",
+                "sns:ListSubscriptions",
+                "sns:ListSubscriptionsByTopic",
+                "sns:ListTopics",
+                "sns:Subscribe",
+                "sns:Unsubscribe",
+                "sns:SetTopicAttributes",
+                "lambda:CreateFunction",
+                "lambda:ListFunctions",
+                "lambda:ListEventSourceMappings",
+                "lambda:CreateEventSourceMapping",
+                "lambda:DeleteEventSourceMapping",
+                "lambda:GetFunctionConfiguration",
+                "lambda:DeleteFunction",
+                "resource-groups:ListGroups",
+                "resource-groups:ListGroupResources",
+                "resource-groups:GetGroup",
+                "resource-groups:GetGroupQuery",
+                "resource-groups:DeleteGroup",
+                "resource-groups:CreateGroup",
+                "tag:GetResources",
+                "kinesis:ListStreams",
+                "kinesis:DescribeStream",
+                "kinesis:DescribeStreamSummary"
+            ],
+            "Effect": "Allow",
+            "Resource": "*"
+        },
+        {
+            "Action": "cloudwatch:GetInsightRuleReport",
+            "Effect": "Allow",
+            "Resource": "arn:aws:cloudwatch:*:*:insight-rule/DynamoDBContributorInsights*"
+        },
+        {
+            "Action": [
+                "iam:PassRole"
+            ],
+            "Effect": "Allow",
+            "Resource": "*",
+            "Condition": {
+                "StringLike": {
+                    "iam:PassedToService": [
+                        "application-autoscaling.amazonaws.com",
+                        "application-autoscaling.amazonaws.com.cn",
+                        "dax.amazonaws.com"
+                    ]
+                }
+            }
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "iam:CreateServiceLinkedRole"
+            ],
+            "Resource": "*",
+            "Condition": {
+                "StringEquals": {
+                    "iam:AWSServiceName": [
+                        "replication.dynamodb.amazonaws.com",
+                        "dax.amazonaws.com",
+                        "dynamodb.application-autoscaling.amazonaws.com",
+                        "contributorinsights.dynamodb.amazonaws.com",
+                        "kinesisreplication.dynamodb.amazonaws.com"
+                    ]
+                }
+            }
+        }
+    ]
+}
+
+===
+
+AmazonSNSFullAccess
+
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "SNSFullAccess",
+            "Effect": "Allow",
+            "Action": "sns:*",
+            "Resource": "*"
+        },
+        {
+            "Sid": "SMSAccessViaSNS",
+            "Effect": "Allow",
+            "Action": [
+                "sms-voice:DescribeVerifiedDestinationNumbers",
+                "sms-voice:CreateVerifiedDestinationNumber",
+                "sms-voice:SendDestinationNumberVerificationCode",
+                "sms-voice:SendTextMessage",
+                "sms-voice:DeleteVerifiedDestinationNumber",
+                "sms-voice:VerifyDestinationNumber",
+                "sms-voice:DescribeAccountAttributes",
+                "sms-voice:DescribeSpendLimits",
+                "sms-voice:DescribePhoneNumbers",
+                "sms-voice:SetTextMessageSpendLimitOverride",
+                "sms-voice:DescribeOptedOutNumbers",
+                "sms-voice:DeleteOptedOutNumber"
+            ],
+            "Resource": "*",
+            "Condition": {
+                "StringEquals": {
+                    "aws:CalledViaLast": "sns.amazonaws.com"
+                }
+            }
+        }
+    ]
+}
+
+===
+
+AWSLambdaBasicExecutionRole
+
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "logs:CreateLogGroup",
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+            ],
+            "Resource": "*"
+        }
+    ]
+}
+
+===
+
+AWSLambdaKinesisExecutionRole
+
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "kinesis:DescribeStream",
+                "kinesis:DescribeStreamSummary",
+                "kinesis:GetRecords",
+                "kinesis:GetShardIterator",
+                "kinesis:ListShards",
+                "kinesis:ListStreams",
+                "kinesis:SubscribeToShard",
+                "logs:CreateLogGroup",
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+            ],
+            "Resource": "*"
+        }
+    ]
+}
+
+===
+
+LambdaFunctionRoleDefaultPolicy
+
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Action": "*",
+            "Resource": [
+                "arn:aws:lambda:us-east-1:473301713056:function:gbl_lab_monitoring",
+                "arn:aws:iam::473301713056:role/LabStack-fd15c6c0-3599-42-GblLabMonitoringgbllabmon-cyx3WKJlU0B9",
+                "arn:aws:events:us-east-1:473301713056:rule/LabStack-fd15c6c0-3599-42-GblLabMonitoringmonitorin-laxsyIOssWQA",
+                "arn:aws:events:us-east-1:473301713056:rule/LabStack-fd15c6c0-3599-42-GblLabMonitoringmonitorin-sKr9MDgeUNQi",
+                "arn:aws:events:us-east-1:473301713056:rule/LabStack-fd15c6c0-3599-42-GblLabMonitoringmonitorin-ETZCkpn0cJ9T",
+                "arn:aws:events:us-east-1:473301713056:rule/LabStack-fd15c6c0-3599-42-GblLabMonitoringmonitorin-jzP5DlsOW3sh",
+                "arn:aws:events:us-east-1:473301713056:rule/LabStack-fd15c6c0-3599-42-GblLabMonitoringmonitorin-DlTq8PcvIMy1",
+                "arn:aws:events:us-east-1:473301713056:rule/LabStack-fd15c6c0-3599-42-GblLabMonitoringmonitorin-wgaDimoJtelg"
+            ],
+            "Effect": "Deny"
+        },
+        {
+            "Action": "lambda:PutProvisionedConcurrencyConfig",
+            "Resource": "*",
+            "Effect": "Deny"
+        }
+    ]
+}
+
+===

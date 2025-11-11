@@ -1,0 +1,28 @@
+#!/bin/bash
+dnf -y install awscli
+aws s3 cp s3://pu-base-buckets-v1-provision-lab/7a3fc3f1-d8f4-44d1-8d57-2a5efd3de980/index.html.tpl /var/www/html/index.html.tpl
+cp  /var/www/html/index.html.tpl /var/www/html/index.html
+aws s3 cp s3://pu-base-buckets-v1-provision-lab/7a3fc3f1-d8f4-44d1-8d57-2a5efd3de980/es_ep_updater.sh /usr/local/bin/es_ep_updater.sh
+chmod 700 /usr/local/bin/es_ep_updater.sh
+dnf -y install httpd
+systemctl start httpd
+cat > /etc/systemd/system/indexupdater.timer <<EOF
+[Unit]
+Description="Updates OpenSearch endpoint config for web app"
+[Timer]
+OnBootSec=5min
+OnCalendar=*-*-* *:*:00
+Unit=indexupdater.service
+[Install]
+WantedBy=multi-user.target
+EOF
+            
+cat > /etc/systemd/system/indexupdater.service <<EOF
+[Unit]
+Description="updates opensearch index"
+[Service]
+ExecStart=/usr/local/bin/es_ep_updater.sh
+EOF
+            
+systemctl daemon-reload
+systemctl start indexupdater.timer

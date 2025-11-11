@@ -1,0 +1,24 @@
+-- configure aws cli default profile
+aws configure
+
+-- and then provide access key and secret, others are optional
+
+-- to validate aws cli credentials, check to ~/.aws/credentials
+
+-- configure a named profile, ex awsdemo
+aws configure --profile awsdemo
+
+-- use aws cli with awsdemo profile, ex:
+aws s3 ls --profile awsdemo
+
+-- install boto3
+pip install boto3
+
+-- test boto3 is installed
+python -c "import boto3; s3_client = boto3.client('s3'); print(s3_client.list_buckets());"
+
+-- install jupyter lab 
+pip install jupyerlab
+
+-- open jupyter lab
+jupyter lab

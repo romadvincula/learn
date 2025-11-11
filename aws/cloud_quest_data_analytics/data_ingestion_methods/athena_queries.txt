@@ -1,0 +1,12 @@
+===
+
+SELECT * FROM "firehose-inbound"."processed_data" limit 10;
+
+===
+
+select col2 as source, count(*) as count from "firehose-inbound"."processed_data"
+where col2 in ('external', 'link')
+group by "col2"
+
+===
+

@@ -1,0 +1,55 @@
+===
+
+glue_execution_policy_lab
+
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Condition": {
+                "StringEquals": {
+                    "aws:RequestedRegion": "us-east-1"
+                }
+            },
+            "Action": [
+                "cloudwatch:*",
+                "glue:*",
+                "logs:*",
+                "s3:*"
+            ],
+            "Resource": "*",
+            "Effect": "Allow",
+            "Sid": "VisualEditor0"
+        }
+    ]
+}
+
+===
+
+glueexecutionroleDefaultPolicy2FE79F60
+
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Action": "*",
+            "Resource": [
+                "arn:aws:lambda:us-east-1:473301713056:function:gbl_lab_monitoring",
+                "arn:aws:iam::473301713056:role/LabStack-fd15c6c0-3599-42-GblLabMonitoringgbllabmon-Qc9IIscI6omH",
+                "arn:aws:events:us-east-1:473301713056:rule/LabStack-fd15c6c0-3599-42-GblLabMonitoringmonitorin-zYUWzKWjCepB",
+                "arn:aws:events:us-east-1:473301713056:rule/LabStack-fd15c6c0-3599-42-GblLabMonitoringmonitorin-JGhPCwK6L17F",
+                "arn:aws:events:us-east-1:473301713056:rule/LabStack-fd15c6c0-3599-42-GblLabMonitoringmonitorin-vz8acVVMaJfK",
+                "arn:aws:events:us-east-1:473301713056:rule/LabStack-fd15c6c0-3599-42-GblLabMonitoringmonitorin-nV8ZPmIxxbOk",
+                "arn:aws:events:us-east-1:473301713056:rule/LabStack-fd15c6c0-3599-42-GblLabMonitoringmonitorin-kudAfqrPz8Eu"
+            ],
+            "Effect": "Deny"
+        },
+        {
+            "Action": "lambda:PutProvisionedConcurrencyConfig",
+            "Resource": "*",
+            "Effect": "Deny"
+        }
+    ]
+}
+
+===

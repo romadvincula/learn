@@ -1,0 +1,24 @@
+LoginURL
+https://signin.aws.amazon.com/console
+
+
+
+Username:
+opsUser
+
+Password:
+Lab1234!
+
+Athena Queries:
+SELECT * FROM "ops_data_ingestion"."operations_datalake" limit 100;
+
+
+
+Username:
+opsDirector
+
+Password:
+Lab1234!
+
+Athena Queries:
+SELECT * FROM "ops_data_ingestion"."operations_datalake" limit 100;

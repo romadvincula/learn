@@ -1,0 +1,40 @@
+Without GSI Index:
+
++----------------+-----------------+-------+------------+--------+
+|      Name      |      Game       | Score | Timestamp  | Badges |
++----------------+-----------------+-------+------------+--------+
+| Jennifer Davis |      Munch      | 99763 | 1425024244 | Champs |
+| Jennifer Davis |  Kart Brothers  | 99984 | 1434841942 | Champs |
+| Jennifer Davis | Zombie Invaders | 99941 | 1448267857 | Champs |
+| Jennifer Davis |    Lemmings     | 99979 | 1574828815 | Champs |
+| Jennifer Davis |  River Rapids   | 99909 | 1591431440 | Champs |
+|  Mary Johnson  |      Munch      | 99936 | 1429468205 | Champs |
+|  Mary Johnson  |    Lemmings     | 99661 | 1497645482 | Champs |
+|  Mary Johnson  |  Kart Brothers  | 97401 | 1518504256 | Champs |
+|  Linda Wilson  |      Munch      | 99263 | 1481006161 | Champs |
+|  James Smith   | Zombie Invaders | 99962 | 1461351017 | Champs |
++----------------+-----------------+-------+------------+--------+
+Printed 10 of 29 records returned
+Consumed Capacity: 220.0
+Duration: 160 miliseconds
+
+With GSI Index:
+
++----------------+---------------+-------+------------+--------+
+|      Name      |     Game      | Score | Timestamp  | Badges |
++----------------+---------------+-------+------------+--------+
+|  Mary Johnson  | Kart Brothers | 97401 | 1518504256 | Champs |
+| Michael Miller | Kart Brothers | 99693 | 1423397967 | Champs |
+| William Moore  | Kart Brothers | 99870 | 1444354054 | Champs |
+| Jennifer Davis | Kart Brothers | 99984 | 1434841942 | Champs |
+| Jennifer Davis |   Lemmings    | 99979 | 1574828815 | Champs |
+|  Mary Johnson  |   Lemmings    | 99661 | 1497645482 | Champs |
+| Michael Miller |   Lemmings    | 99821 | 1536836276 | Champs |
+|  Robert Brown  |   Lemmings    | 99976 | 1475659027 | Champs |
+| John Williams  |   Lemmings    | 99452 | 1487337469 | Champs |
+|  Robert Brown  |     Munch     | 99907 | 1498221003 | Champs |
++----------------+---------------+-------+------------+--------+
+Printed 10 of 29 records returned
+Consumed Capacity: 0.5
+Duration: 51 miliseconds
+
