@@ -1,0 +1,57 @@
+-- install astro cli with docker as airflow backend
+brew install astronomer/tap/astro --without-podman
+
+-- if astronomer is not in brew tap, add it using
+brew tap astronomer/tap
+
+-- check if astro is succesfully installed
+astro version
+
+-- initialize astro project
+astro dev init
+
+-- init with specific runtime, example:
+astro dev init --runtime-version 12.9.0
+
+-- start airflow and containers
+astro dev start
+
+-- default credentials for airflow web
+admin/admin
+
+-- if default port 5432 conflicts with local postgres instance, change
+-- docker postgres port:
+astro config set postgres.port 5433
+
+-- access the airflow cli (inside webserver instance) using astro, must
+-- be inside airflow dir
+astro dev bash
+
+-- check if metadata db can be reached
+airflow db check
+
+-- purge all records in db tables and move them in archive tables
+airflow db clean
+
+-- export archived data from archive tables in csv format
+airflow db export-archived
+
+-- remove archive data from db
+airflow db drop archive
+
+-- run subsections of a dag for a specified data range
+airflow dags backfill my_dag --reset-dagrun --rerun-failed-tasks --run-backwards \
+-s 2024-01-01 -e 2024-01-10
+
+--resync dags (to show in ui)
+airflow dags reserialize
+
+-- list all dags (to check if airflow recognizes specific dags)
+airflow dags list
+
+-- test a task instance
+airflow tasks test my_dag my_task 2024-01-01
+
+-- list all available commands
+airflow cheat-sheet
+
