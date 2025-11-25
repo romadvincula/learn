@@ -55,3 +55,22 @@ airflow tasks test my_dag my_task 2024-01-01
 -- list all available commands
 airflow cheat-sheet
 
+-- To stop the service and prevent automatic startup:
+-- Identify the PostgreSQL launch agent file, typically 
+-- found in /Library/LaunchDaemons or /Library/LaunchAgents.
+-- You can search for it using:
+sudo find /Library/LaunchDaemons /Library/LaunchAgents -name "*postgres*"
+
+-- If a .plist file (e.g., postgresql-16.plist) is found, unload it to stop 
+-- the service and prevent it from launching at system startup:
+sudo launchctl unload -w /Library/LaunchDaemons/postgresql-16.plist
+
+-- (Replace postgresql-16.plist with the actual filename found.) Verify that PostgreSQL is disabled.
+sudo launchctl list | grep postgres
+
+-- to restart astro environment (such as when adding new modules in requirements.txt)
+astro dev restart
+
+-- build Spark image that will run the Spark jobs
+cd spark/notebooks/spark-transform
+docker build -t airflow/stock-app .
