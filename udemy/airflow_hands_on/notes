@@ -74,3 +74,37 @@ astro dev restart
 -- build Spark image that will run the Spark jobs
 cd spark/notebooks/spark-transform
 docker build -t airflow/stock-app .
+
+-- run backfill on a dag using cli
+airflow dags backfill -s <start> -e <end> dag_id
+
+-- Airflow Schedules: CRON vs timedelta 
+CRON - airflow assumes you will always run your DAG 
+at a specific time
+    - respects DST
+
+Timedelta - airflow assumes you will always run your
+DAG at a specific interval
+    - doesn't respect DST
+
+-- Datasets - alternative to Sensors (less resources intensive), sets dependencies between dags based on file update events, the underlying data in the file is not relevant
+    - can set file/s as datasets, when producer 
+    dataset runs successful then consumer datasets
+    will be run
+    - unsuccessful runs will not trigger consumer datasets
+    - datasets can be schedule based on AND/OR logic
+    - to run dags based on datasets and time-based schedule use the DatasetOrTimeSchedule class
+
+-- use .airflowignore file so that the scheduler will not parse those files in the dags folder
+
+-- addtional dag parameters: on_success_callback, on_failure_callback
+-- assign a function that will handle what to do depending on the outcome
+
+-- task callbacks: on_success_callback, on_failure_callback, on_skipped_callback, on_retry_callback,
+-- on_execute_callback
+
+-- defaul_args:
+retries - how many times to run task before failure
+retry_delay - delay between each retry
+retry_exponential_backoff - applies exponential retry delay after each failed attempt
+max_retry_delay - max allowed limit of retry delay until task is considered failed
