@@ -87,7 +87,9 @@ Timedelta - airflow assumes you will always run your
 DAG at a specific interval
     - doesn't respect DST
 
--- Datasets - alternative to Sensors (less resources intensive), sets dependencies between dags based on file update events, the underlying data in the file is not relevant
+-- Datasets - alternative to Sensors (less resources intensive), sets dependencies 
+    between dags based on file update events, the underlying data in the file is 
+    not relevant
     - can set file/s as datasets, when producer 
     dataset runs successful then consumer datasets
     will be run
@@ -108,3 +110,128 @@ retries - how many times to run task before failure
 retry_delay - delay between each retry
 retry_exponential_backoff - applies exponential retry delay after each failed attempt
 max_retry_delay - max allowed limit of retry delay until task is considered failed
+
+-- astro cli / airflow testing features:
+- parse dag and ensure there are no import errors
+astro dev parse
+
+- run all tests in the tests/folder, use --versbosity debug for detailed result
+astro dev pytest
+
+- test the env against new runtime/airflow versions
+astro dev upgrade-test
+
+- execute a single dag run
+airflow dags test
+
+-or
+astro dev run dags test <dag_name> <start_date>
+
+- executes a single task
+airflow tasks test
+
+-- required install for #49 (section 4)
+pip install apache-airflow
+
+-- setup for airflow testing
+export PYTHONPATH=/Users/romadv-mac/dev_mac/learn/udemy/airflow_hands_on/course:$PYTHONPATH
+export AIRFLOW_HOME=/Users/romadv-mac/dev_mac/learn/udemy/airflow_hands_on/course
+
+- creates a sqlite db used by dag run during dag tests
+airflow db migrate
+
+-- Task Groups - organizes tasks into groups within your dag
+- can apply default args to specific group only
+- dynamically map over group of tasks
+- turn task patterns into module that can be imported into multiple dags
+- can be nested
+- tasks within a task group are prefixed with the name of the task group, 
+    ex. to get the xcom var in a tg: task_ids="check.validate_fields"
+
+-- Trigger Rules - determines the whether to run the task based on the state of upstream tasks
+- ALL_SUCCESS - task runs only when all upstream tasks success
+- ALL_FAILED - run only when all upstream are failed or upstream failed
+- ALL_DONE - run when all upstream are done, regardless if success or failed
+- ALL_SKIPPED - only when all upstream are skipped
+- ONE_SUCCESS - run when at least 1 upstream success
+- ONE_FAILED - run when at least 1 upstream failed
+- ONE_DONE - run when at least 1 upstream either success or failed
+- NONE_FAILED - if all upstream have either skipped or successfully ran
+- NONE_FAILED_MIN_ONE_SUCCESS - all upstream finished, none failed, and at least 1 success
+- NONE_SKIPPED - run when no upstream in skipped state
+- ALWAYS - run as soon as the dag runs regardless of upstream state
+
+-- TEMPLATES
+- help avoid hard coding values, rendered at runtime (when tasks run)
+- templates are defined within strings in templateable parameters using {{ }}
+- airflow provides variables such as ids, ti, logical_date, etc.
+- not all parameters of an Operator are templateable, check template_fields
+    in the operator's docs confirm
+
+-- XComs
+- to store classes as xcom, you will need to implement a method that
+    that serializes that class into a json serielizable object
+- size limit: 1gb for postgres, sqlite = 2gb, mysql = 64mb
+- to overcome the size limit use s3 as Xcom backend
+
+-- variables
+- create a variable using airflow cli
+course % astro dev run variables set my_number_2 84
+
+- you could create an env var using .env file but it requires a restart
+astro dev restart
+
+- note: can be used to hide vars as this var will not appear 
+    in the ui and variables list commands
+astro dev run variables list
+
+- get value of variable in cli
+astro dev run variables get my_number_2
+
+- variables can be created in tasks using Variable.set()
+
+-- Airflow parameters
+- Parallelism: max number of tasks that can run concurrently on each
+    scheduler within a single airflow env
+- max_active_tasks_per_dag: max number of tasks that can be scheduled
+    at the same time across all runs of a dag
+    - at the dag level: max_active_tasks
+- max_active_runs_per_dag: max number of active dag runs (per dag) that
+    the airflow scheduler can create at a time
+    - at the dag level: max_active_runs
+
+-- Kubernetes
+- The Kubernetes Executor runs each task in an individual Kubernetes Pod
+- It sends a message to the KubeAPI that creates a Pod and runs the task in it
+- When a task completes, its Pod is terminated and the resources are returned
+    to the cluster
+- Tasks are isolated from each other
+- Task isolation allows granular resource allocation and easier dependency management
+
+- create a namespace named airflow in Kubernetes
+kubectl create namespace airflow
+
+- list namespaces available
+kubectl get namespaces
+
+- get pods for the airflow namespace
+kubectl get pods -n airflow
+
+- forward port 8080 to host 8080
+kubectl port-forward svc/airflow-webserver 8080:8080 --namespace airflow
+
+-- Helm - package manager for Kubernetes
+- add airflow in Kubernetes
+helm repo add apache-airflow https://airflow.apache.org
+
+- update repos
+helm repo update
+
+- install airflow application in the airflow namespace
+helm install airflow apache-airflow/airflow --namespace airflow --debug
+
+-- backup airflow variables using airflow cli
+airflow variables export variables_backup.json
+
+-- backup airflow connections in env format
+airflow connections export connections_backup.env --file-format env

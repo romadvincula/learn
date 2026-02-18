@@ -1,0 +1,14 @@
+[Instructions] Schedule Lambda Function using AWS Event Bridge
+We can schedule the job using EventBridge so that files are downloaded and uploaded to 
+s3 as soon as files are available in gharchive.
+
+Go to AWS Console and search for EventBride.
+
+Create rules and schedule every 15 minutes.
+
+Clean up the bookmark and the files added beyond baseline
+
+Validate whether the files are downloaded or not.
+
+After the validation is done make sure the event bridge rule is disabled and 
+deleted so that you do not end up paying unnecessarily.

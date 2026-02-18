@@ -1,0 +1,27 @@
+[Instructions and Code] Validating s3 access for local development
+Let us validate s3 access for local development. We need to have the appropriate credentials to access s3 bucket from the local development environment.
+
+Import required libraries.
+
+Configure environment variable AWS_PROFILE to appropriate value.
+
+Develop the code to upload the contents of the zip file from GitHub archive to s3. We will create a new file called upload.py.
+
+import os
+import boto3
+import requests
+ 
+os.environ.setdefault('AWS_DEFAULT', 'itvgithub')
+ 
+s3_client = boto3.client('s3')
+ 
+file = '2021-01-29-0.json.gz'
+res = requests.get(f'https://data.gharchive.org/{file}')
+ 
+upload_res = s3_client.put_object(
+    Bucket='itv-github',
+    Key='2021-01-29-0.json.gz',
+    Body=res.content
+  )
+ 
+print(upload_res)

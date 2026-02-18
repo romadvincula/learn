@@ -1,0 +1,22 @@
+[Instructions and Code] Validating files incrementally
+Let us implement the logic to validate files incrementally. We will use the current day’s beginning hour as baseline.
+
+We can convert the date and hour part of the file to timestamp.
+
+Once we get the timestamp we should be able to use timedelta to add 1 hour in each iteration.
+
+Using the new date and time, we should be able to generate the next file. We can check whether the file is already available or not.
+
+from datetime import datetime as dt
+from datetime import timedelta as td
+import requests
+ 
+next_file = '2021-01-30-0.json.gz'
+ 
+while True:
+    res = requests.get(f'https://data.gharchive.org/{next_file}')
+    if res.status_code != 200:
+        break
+    print(f'The status code for {next_file} is {res.status_code}')
+    dt_part = next_file.split('.')[0]
+    next_file = f"{dt.strftime(dt.strptime(dt_part, '%Y-%M-%d-%H') + td(hours=1), '%Y-%M-%d-%-H')}.json.gz"

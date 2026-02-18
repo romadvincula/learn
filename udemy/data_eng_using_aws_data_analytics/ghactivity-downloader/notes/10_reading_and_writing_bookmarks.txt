@@ -1,0 +1,30 @@
+[Instructions and Code] Reading and Writing Bookmark using s3
+
+Let us go through s3 APIs to read and write bookmark details using s3. For now we 
+will maintain the last copied file as a bookmark.
+
+Writing content to s3. We will use s3://itv-github/sandbox/bookmark.
+
+bookmark_contents = '2021-01-30-0.json.gz'
+ 
+s3_client.put_object(
+    Bucket='itv-github',
+    Key='sandbox/bookmark',
+    Body=bookmark_contents.encode('utf-8')
+    )
+
+Reading content from s3. If the bookmark is not there we need to catch the exception and 
+use the baseline date as a bookmark.
+
+try:
+    bookmark_file = s3_client.get_object(
+        Bucket='itv-github',
+        Key='sandbox/bookmark'
+    )
+    prev_file = bookmark_file['Body'].read().decode('utf-8')
+except ClientError as e:
+    if e.response['Error']['Code'] == 'NoSuchKey':
+        # Catch exception
+        # prev_file = baseline_file
+    else:
+        raise

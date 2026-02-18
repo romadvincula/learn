@@ -7,3 +7,7 @@ mynotes.txt
 
 *.pem
 *.db
+
+.
+
+__pycache__

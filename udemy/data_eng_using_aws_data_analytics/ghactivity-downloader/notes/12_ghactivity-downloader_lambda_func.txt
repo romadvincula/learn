@@ -1,0 +1,32 @@
+[Instructions and Source Code] - ghactivity-downloader Lambda Function
+Here are the instructions you need to follow to go through the source code.
+
+Create a folder by name ghactivity-downloader - mkdir ghactivity-downloader
+
+Go to the folder ghactivity-downloader - cd ghactivity-downloader
+
+Download the zip file from the downloadable resources and move the zip file to ghactivity-downloader
+
+Unzip the zip file ghactivity-downloader-src.zip - On Mac or Linux you can use the command unzip ghactivity-downloader-src.zip
+
+Create virtual environment using Python 3 - python3 -m venv ghad-venv
+
+Activate virtual environment - source ghad-venv/bin/activate
+
+Install required dependencies in the virtual environment (boto3, requests)
+
+pip install requests
+pip install boto3
+8. Create a folder by name ghalib using mkdir ghalib. This will be used for dependencies that are supposed to be shipped along with the source code for our lambda function.
+
+9. Install dependencies that need to be shipped to deploy as a lambda function
+
+pip install requests -t ghalib
+
+10. Build the zip file with the source code and dependencies such as requests using the following commands.
+
+cd ghalib
+zip -r ghactivity-downloader.zip .
+cd ..
+zip -r ghactivity-downloader.zip *.py
+11. Now zip file is ready for deployment as a lambda function.

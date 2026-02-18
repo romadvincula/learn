@@ -1,0 +1,194 @@
+Create EC2 Instance with Ubuntu OS
+
+Download genlogs repo into your machine and copy to the instance.
+https://github.com/itversity/gen_logs.git
+
+
+[Instructions] gen_logs
+    This is to simulate web application writing traffic details to log file.
+
+    It has shell scripts which invoke python program
+    It is compatible with Python 2
+    Here is the setup process on linux or mac or on cygwin.
+
+    Identify directory /opt/
+    Copy gen_logs directory to /opt
+
+    sudo mv -f gen_logs /opt
+
+    sudo chown -R `whoami` /opt/gen_logs
+
+    Update PATH in .profile or .bash_profile or create soft links for the shell programs
+
+    export PATH=$PATH:/opt/gen_logs
+
+    Either restart shell or run .profile/.bash_profile script
+
+    Run to start generating web logs
+    start_logs.sh
+
+    Run to preview while logs are being generated (Hit ctrl-c to come out)
+    tail_logs.sh
+
+    Run to stop generating web logs
+    stop_logs.sh
+
+
+Change path in shell and python scripts to the correct path of the app.
+
+Copy nginx config file to project directory:
+
+/opt/gen_logs$ cp /etc/logrotate.d/nginx .
+
+
+Force rotate targeted log file (logs/access.log):
+
+sudo logrotate -f /etc/logrotate.d/gen_logs
+
+
+Edit crontab to add entry for logrotate:
+
+crontab -e
+
+* 0 * * * sudo logrotate -f /etc/logrotate.d/gen_logs
+
+
+Setup Kinesis Agent in the instance, see git repo:
+    Update your system:
+    sudo apt-get update
+
+    Install OpenJDK 8:
+    sudo apt-get install -y openjdk-8-jdk
+
+    Download agent from repo:
+    git clone https://github.com/awslabs/amazon-kinesis-agent.git
+
+    Run installation script (must point the installer to Java 8):
+    sudo JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64 ./setup --install
+
+    Start the agent:
+    sudo service aws-kinesis-agent start
+
+    Check status: 
+    sudo service aws-kinesis-agent status
+
+    To stop the agent:
+    sudo service aws-kinesis-agent stop
+
+    Enable on boot: 
+    sudo systemctl enable aws-kinesis-agent
+
+    Disable from boot:
+    Enable on boot: 
+    sudo systemctl disable aws-kinesis-agent
+
+
+Create a Firehose stream in AWS Console: gen_logs_s3
+Use Direct PUT method for source
+Destination to S3 with itv-genlogs as bucket
+S3 Prefix: logs/
+Buffer size = 1 MB and buffer interval = 60 secs
+
+
+Create User and Group for gen_logs app
+    Group: ITVGenLogsGroup
+    User: ITVGenLogsUser
+    Download access keys for the user and save for later.
+
+    Create ITVGenLogsPolicy policy for the group:
+        {
+            "Version":"2012-10-17",		 	 	  		 	 	 
+            "Statement": [
+                {
+                    "Effect": "Allow",
+                    "Action": [
+                        "firehose:DeleteDeliveryStream",
+                        "firehose:PutRecord",
+                        "firehose:PutRecordBatch",
+                        "firehose:UpdateDestination"
+                    ],
+                    "Resource": [
+                        "<replace with gen_logs_s3 arn>"
+                    ]
+                }
+            ]
+        }
+
+    Edit aws-kinesis/agent.json to:
+        {
+            "cloudwatch.emitMetrics": false,
+            "awsAccessKeyId": "",
+            "awsSecretAccessKey": "",
+            "firehose.endpoint": "firehose.us-east-1.amazonaws.com",
+
+            "flows": [
+                {
+                "filePattern": "/opt/gen_logs/logs/access.log",
+                "deliveryStream": "gen_logs_s3"
+                }
+            ]
+        }
+
+    Restart aws kinesis agent:
+    sudo systemctl restart aws-kinesis-agent
+
+    Validate the logs for the kinesis agent also check in s3:
+    tail /var/log/aws-kinesis-agent/aws-kinesis-agent.log
+
+
+Use custom prefix for bucket used by gen_logs_s3 firehose stream
+    Change S3 prefix logs to:
+    logs/year=!{timestamp:yyyy}/month=!{timestamp:MM}/day=!{timestamp:dd}/
+
+    Error prefix:
+    err/
+
+
+Create ITVGenLogsS3ReadOnly policy:
+    {
+    "Version": "2012-10-17",
+    "Statement": [
+            {
+                "Sid": "ListObjectsInBucket",
+                "Effect": "Allow",
+                "Action": [
+                    "s3:ListBucket"
+                ],
+                "Resource": [
+                    "arn:aws:s3:::itv-genlogs"
+                ]
+            },
+            {
+                "Sid": "AllObjectActions",
+                "Effect": "Allow",
+                "Action": "s3:GetObject",
+                "Resource": [
+                    "arn:aws:s3:::itv-genlogs/*"
+                ]
+            }
+        ]
+    }
+
+
+Attach policy to ITVGenLogsGroup group
+
+Configure aws cli itvgenlogs profile in your local machine for ITVGenLogsUser:
+aws configure --profile itvgenlogs
+
+Create a new project dir: genlogss3 for consuming s3 data using boto3:
+mkdir genlogss3 && cd genlogss3
+
+Note: python env used is conda py310
+
+Install boto3 and jupyter lab using conda:
+conda install boto3 --channel conda-forge
+conda install -c conda-forge jupyterlab
+
+
+Continue in notebooks in genlogss3
+
+
+Links:
+https://docs.aws.amazon.com/firehose/latest/dev/download-install.html
+https://docs.aws.amazon.com/firehose/latest/dev/agent-config-settings.html
+https://docs.aws.amazon.com/firehose/latest/dev/s3-prefixes.html

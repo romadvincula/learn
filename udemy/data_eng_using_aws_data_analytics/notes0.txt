@@ -22,3 +22,16 @@ pip install jupyerlab
 
 -- open jupyter lab
 jupyter lab
+
+Here are some of the important commands under s3:
+- Listing objects and folders - ls
+- Copying files - cp
+- Moving objects or folders - mv
+- Deleting objects or folders - rm
+- Creating bucket - mb
+- Removing bucket - rb
+
+IAM Identities - are users, groups, and roles that are used to define and manage access and permissions to aws services
+
+Roles vs Groups - users are assigned to groups and services (ie. EC2) are assigned to roles, in both cases the attached policies define
+what they can do

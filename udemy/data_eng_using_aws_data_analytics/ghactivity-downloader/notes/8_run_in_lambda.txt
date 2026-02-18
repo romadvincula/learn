@@ -1,0 +1,14 @@
+[Instructions] Run using AWS Lambda Console
+We need to grant required permissions on s3 bucket to the role associated 
+with Lambda Function. We can take care of it using the policy which has 
+permissions on s3 bucket.
+
+Identify the role associated with the lambda function by going to the permissions tab.
+
+Go to the role and attach the policy to the role associated with Lambda Function.
+
+We will also copy the files to the sandbox folder within the s3 bucket. 
+Hence, let us create the folder, refactor the code and then deploy.
+
+Once deployed we can test using AWS Lambda Console and then validate the logs as 
+well as the target folder within s3.

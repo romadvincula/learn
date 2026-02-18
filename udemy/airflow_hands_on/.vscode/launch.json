@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "name": "Python Debugger: Python File",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "env": {
+                "PYTHONPATH": "/Users/romadv-mac/dev_mac/learn/udemy/airflow_hands_on/course",
+                "AIRFLOW_HOME": "/Users/romadv-mac/dev_mac/learn/udemy/airflow_hands_on/course"
+            }
+        }
+    ]
+}

@@ -1,0 +1,337 @@
+[Setting Up]
+use conda environment py310 to run spark. spark installed in /opt/spark
+
+
+[Commands] - 1. Setup Virtual Environment and Install Pyspark
+Here are the commands used to set up a virtual environment and install Pyspark.
+
+python3 -m venv deod-venv
+source deod-venv/bin/activate
+pip install pyspark
+
+
+[Code and Instructions] - 2. Getting Started with Pycharm
+Getting Started
+
+Here is how we can get started with local development of data engineering 
+pipelines using Spark.
+
+Create Virtual Environment - python3.7 -m venv itvg-venv
+
+Activate virtual environment - source itvg-venv/bin/activate
+
+Install PySpark for local development - pip install pyspark==2.4.*
+
+Open using PyCharm and make sure appropriate virtual environment is used 
+from the virtual environment which we have setup.
+
+Create a program called as app.py and enter this code.
+
+from pyspark.sql import SparkSession
+ 
+spark = SparkSession. \
+    builder. \
+    master('local'). \
+    appName('GitHub Activity - Getting Started'). \
+    getOrCreate()
+ 
+spark.sql('SELECT current_date').show()
+
+[Code and Instructions] - 3. Create Function for Spark Session
+Create Function for SparkSession
+Let us create a program and define function which returns spark session object.
+
+Define function by name get_spark_session in a program called as util.py
+
+from pyspark.sql import SparkSession
+ 
+ 
+def get_spark_session(env, app_name):
+    if env == 'DEV':
+        spark = SparkSession. \
+            builder. \
+            master('local'). \
+            appName(app_name). \
+            getOrCreate()
+        return spark
+    return
+
+Refactor code in app.py to use the function to get Spark Session.
+
+import os
+from util import get_spark_session
+ 
+ 
+def main():
+    env = os.environ.get('ENVIRON')
+    spark = get_spark_session(env, 'GitHub Activity - Getting Started')
+    spark.sql('SELECT current_date').show()
+ 
+ 
+if __name__ == '__main__':
+    main()
+
+
+Configure run time environment variable by name ENVIRON with value DEV to 
+validate locally.
+
+Run the program to confirm that the changes are working as expected.
+
+[Code and Instructions] - 4. Read data from files
+Read data from files
+
+Let us develop the code to read the data from files into Spark Dataframes.
+
+Create directory for data and copy some files into it.
+
+mkdir -p data/itv-github/landing/ghactivity
+cd data/itv-github/landing/ghactivity
+wget https://data.gharchive.org/2021-01-13-0.json.gz
+wget https://data.gharchive.org/2021-01-14-0.json.gz
+wget https://data.gharchive.org/2021-01-15-0.json.gz
+
+Create a Python program by name read.py. We will create a function by name 
+from_files. It reads the data from files into Dataframe and returns it.
+
+def from_files(spark, data_dir, file_pattern, file_format):
+    df = spark. \
+        read. \
+        format(file_format). \
+        load(f'{data_dir}/{file_pattern}')
+    return df
+
+Call the program from app.py. For now review schema and data.
+
+import os
+from util import get_spark_session
+from read import from_files
+ 
+ 
+def main():
+    env = os.environ.get('ENVIRON')
+    src_dir = os.environ.get('SRC_DIR')
+    file_pattern = f"{os.environ.get('SRC_FILE_PATTERN')}-*"
+    src_file_format = os.environ.get('SRC_FILE_FORMAT')
+    spark = get_spark_session(env, 'GitHub Activity - Reading Data')
+    df = from_files(spark, src_dir, file_pattern, src_file_format)
+    df.printSchema()
+    df.select('repo.*').show()
+ 
+ 
+if __name__ == '__main__':
+    main()
+
+
+[Code and Instructions] - 5. Process data using Spark APIs
+Process data using Spark APIs
+
+We will eventually partition the data by year, month and day of month while 
+writing to target directory. However, to partition the data we need to add new columns.
+
+Create a Python program by name process.py. We will create a function by name 
+df_transform. It partitions the Dataframe using specified field.
+
+from pyspark.sql.functions import year, \
+    month, dayofmonth
+ 
+ 
+def transform(df):
+    return df.withColumn('year', year('created_at')). \
+        withColumn('month', month('created_at')). \
+        withColumn('day', dayofmonth('created_at'))
+
+Call the program from app.py. For now review schema and data.
+
+import os
+from util import get_spark_session
+from read import from_files
+from process import transform
+ 
+ 
+def main():
+    env = os.environ.get('ENVIRON')
+    src_dir = os.environ.get('SRC_DIR')
+    file_pattern = f"{os.environ.get('SRC_FILE_PATTERN')}-*"
+    src_file_format = os.environ.get('SRC_FILE_FORMAT')
+    spark = get_spark_session(env, 'GitHub Activity - Partitioning Data')
+    df = from_files(spark, src_dir, file_pattern, src_file_format)
+    df_transformed = transform(df)
+    df_transformed.printSchema()
+    df_transformed.select('year', 'month', 'day').show()
+ 
+ 
+if __name__ == '__main__':
+    main()
+
+
+[Code and Instructions] - 6. Write data to files
+Write data to files
+
+Let us develop the code to write Spark Dataframe to the files using Spark Dataframe APIs.
+
+Create a Python program by name write.py. We will create a function by name 
+to_files. It writes the data from Dataframe into files.
+
+def to_files(df, tgt_dir, file_format):
+    df.coalesce(16). \
+        write. \
+        partitionBy('year', 'month', 'day'). \
+        mode('append'). \
+        format(file_format). \
+        save(tgt_dir)
+
+Call the program from app.py to write Dataframe to files.
+
+import os
+from util import get_spark_session
+from read import from_files
+from write import write
+from process import transform
+ 
+ 
+def main():
+    env = os.environ.get('ENVIRON')
+    src_dir = os.environ.get('SRC_DIR')
+    file_pattern = f"{os.environ.get('SRC_FILE_PATTERN')}-*"
+    src_file_format = os.environ.get('SRC_FILE_FORMAT')
+    tgt_dir = os.environ.get('TGT_DIR')
+    tgt_file_format = os.environ.get('TGT_FILE_FORMAT')
+    spark = get_spark_session(env, 'GitHub Activity - Reading and Writing Data')
+    df = from_files(spark, src_dir, file_pattern, src_file_format)
+    df_transformed = transform(df)
+    write(df_transformed, tgt_dir, tgt_file_format)
+ 
+ 
+if __name__ == '__main__':
+    main()
+
+Run the application after adding environment variables. Validate for multiple days.
+
+2021-01-13
+
+2021-01-14
+
+2021-01-15
+
+Check for files in the target location.
+
+find data/itv-github/raw/ghactivity
+
+Run below code using pyspark CLI.
+
+file_path = 'data/itv-github/raw/ghactivity'
+df = spark.read.parquet(file_path)
+df.printSchema()
+df.show()
+df.groupBy('year', 'month', 'day').count().show()
+df.count()
+
+
+[Code and Instructions] - 7. Productionizing the code
+Productionize Code
+
+Let us make necessary changes to the code so that we can run on a multinode cluster.
+
+Update util.py to use multi node cluster.
+
+from pyspark.sql import SparkSession
+ 
+ 
+def get_spark_session(env, app_name):
+    if env == 'DEV':
+        spark = SparkSession. \
+            builder. \
+            master('local'). \
+            appName(app_name). \
+            getOrCreate()
+        return spark
+    elif env == 'PROD':
+        spark = SparkSession. \
+            builder. \
+            master('yarn'). \
+            appName(app_name). \
+            getOrCreate()
+        return spark
+    return
+
+Here are the commands to download the files.
+
+mkdir -p data/itv-github/landing/ghactivity
+cd data/itv-github/landing/ghactivity
+ 
+wget https://data.gharchive.org/2021-01-13-{0..23}.json.gz
+wget https://data.gharchive.org/2021-01-14-{0..23}.json.gz
+wget https://data.gharchive.org/2021-01-15-{0..23}.json.gz
+
+Copy the files into HDFS landing folders.
+
+hdfs dfs -mkdir -p /user/${USER}/itv-github/landing/ghactivity
+hdfs dfs -ls /user/${USER}/itv-github/landing/ghactivity
+hdfs dfs -put * /user/${USER}/itv-github/landing/ghactivity/
+ 
+# Validating Files in HDFS
+hdfs dfs -ls /user/${USER}/itv-github/landing/ghactivity
+hdfs dfs -ls /user/${USER}/itv-github/landing/ghactivity|wc -l
+hdfs dfs -du -s -h /user/${USER}/itv-github/landing/ghactivity
+
+Run the application after adding environment variables. Validate for multiple days.
+
+2021-01-13
+2021-01-14
+2021-01-15
+
+Here are the export statements to set the environment variables.
+
+export ENVIRON=PROD
+export SRC_DIR=/user/${USER}/itv-github/landing/ghactivity
+export SRC_FILE_FORMAT=json
+export TGT_DIR=/user/${USER}/itv-github/raw/ghactivity
+export TGT_FILE_FORMAT=parquet
+ 
+export PYSPARK_PYTHON=python3
+
+Here are the spark submit commands to run application for 3 dates.
+
+export SRC_FILE_PATTERN=2021-01-13
+ 
+spark2-submit --master yarn \
+    --py-files itv-ghactivity.zip \
+    app.py
+ 
+export SRC_FILE_PATTERN=2021-01-14
+ 
+spark2-submit --master yarn \
+    --py-files itv-ghactivity.zip \
+    app.py
+ 
+export SRC_FILE_PATTERN=2021-01-15
+ 
+spark2-submit --master yarn \
+    --py-files itv-ghactivity.zip \
+    app.py
+
+Check for files in the target location.
+
+hdfs dfs -find /user/${USER}/itv-github/raw/ghactivity
+
+We can use pyspark2 --master yarn --conf spark.ui.port=0 to launch Pyspark and 
+run the below code to validate.
+
+import getpass
+username = getpass.getuser()
+ 
+src_file_path = f'/user/{username}/itv-github/landing/ghactivity'
+src_df = spark.read.json(src_file_path)
+src_df.printSchema()
+src_df.show()
+src_df.count()
+from pyspark.sql.functions import to_date
+src_df.groupBy(to_date('created_at').alias('created_at')).count().show()
+ 
+tgt_file_path = f'/user/{username}/itv-github/raw/ghactivity'
+tgt_df = spark.read.parquet(tgt_file_path)
+tgt_df.printSchema()
+tgt_df.show()
+tgt_df.count()
+tgt_df.groupBy('year', 'month', 'day').count().show()
+

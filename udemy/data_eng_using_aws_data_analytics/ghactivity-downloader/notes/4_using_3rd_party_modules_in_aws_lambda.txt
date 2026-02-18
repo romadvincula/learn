@@ -1,0 +1,14 @@
+[Instructions and Code] Using 3rd party libraries in AWS Lambda
+Let us understand how to include 3rd party libraries as part of the zip file that will be deployed as lambda function.
+
+You need to ensure that all the 3rd party libraries which are supposed to be deployed along with lambda functions are downloaded to a folder. In our case it is ghalib.
+
+We need to go to the folder to build the zip file. Make sure the zip file is created in the base directory of the project and update the zip file with source code.
+
+rm ghactivity-downloader.zip
+cd ghalib
+zip -r ../ghactivity-downloader.zip .
+cd ..
+zip -g ghactivity-downloader.zip lambda_function.py download.py
+We can upload the zip file to AWS Lambda console and validate successfully. Make sure to increase memory size to 512 MB as demonstrated.
+

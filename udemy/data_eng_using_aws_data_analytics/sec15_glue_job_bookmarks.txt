@@ -1,0 +1,238 @@
+[Instructions and Code] Cleaning up the data
+Let us clean up the data in the raw layer so that we can go through the details about 
+incremental data processing using Glue Job Bookmarks.
+
+We can delete data using AWS Web Console or command line.
+
+Here are the steps to delete using AWS Web Console.
+
+Go to the bucket - s3://itv-github
+
+Go to the raw folder
+
+Right click on ghactivity folder and then click on delete
+
+Alternatively, we can also use AWS CLI to delete the files. Make sure to use the appropriate profile.
+
+
+aws s3 ls s3://itv-github/raw/ --profile itvgithub
+aws s3 ls s3://itv-github/raw/ghactivity/ --profile itvgithub
+aws s3 rm s3://itv-github/raw/ --recursive --profile itvgithub
+
+
+[Instructions and Code] Run Job using Bookmark
+Let us run the job using Glue Job Bookmark. We will enable at the Glue Job level.
+
+Go to the Glue Console and then to Jobs.
+
+Click on the job and then go to edit Job.
+
+Go to Advanced options and enable Glue Job Bookmark.
+
+Save the job and click on run the job.
+
+Once the job is run make sure to go to the s3 console and check if the data is copied or not. 
+You can also run this command.
+
+
+aws s3 ls s3://itv-github/raw/ghactivity/ --profile itvgithub
+aws s3 ls s3://itv-github/raw/ghactivity/ --recursive --profile itvgithub
+
+
+We will also get the folder size using AWS Web Console. It is approximately 8 GB.
+
+With bookmarks enabled, Glue will only process new files from the source.
+
+
+[Instructions and Code] Validate Bookmark using AWS CLI
+Let us understand more about AWS CLI to get information about job, job runs 
+as well as current bookmark.
+
+
+# Listing jobs:
+aws glue list-jobs \
+    --profile itvgithub \
+    --region us-east-1
+Get job details
+
+aws glue \
+    get-job \
+        --job-name github_json_to_parquet \
+        --profile itvgithub \
+        --region us-east-1
+Get job run ids. The latest one will be typically at top.
+
+aws glue \
+    get-job-runs \
+        --job-name github_json_to_parquet \
+        --profile itvgithub \
+        --region us-east-1
+Get job run details to verify if job is successful or not.
+
+aws glue \
+    get-job-run \
+        --job-name github_json_to_parquet \
+        --run-id jr_a350197ce2d5cc3168160813e28bef293e0edd4fc2fe8f458191885d0bb32f96 \
+        --profile itvgithub \
+        --region us-east-1
+
+# Get job bookmark details. This information will be used to read the data in incremental 
+# fashion in subsequent runs. Make sure to keep track of it to compare with subsequent runs.
+
+aws glue \
+    get-job-bookmark \
+        --job-name github_json_to_parquet \
+        --profile itvgithub \
+        --region us-east-1
+
+# We can use reset-job-bookmark to remove the bookmark. It comes handy to start the 
+# jobs from the beginning. We can also reset to a particular run using run id.
+
+aws glue reset-job-bookmark \
+    --job-name github_json_to_parquet \
+    --profile itvgithub \
+    --region us-east-1
+
+
+[Instructions and Code] Add new data to landing
+Let us upload the data to s3 for the next day. In our case it is 2021-01-16.
+
+Downloading the data to the local file system using wget.
+
+
+mkdir -p ~/Downloads/ghactivity
+cd ~/Downloads/ghactivity
+wget https://data.gharchive.org/2021-01-16-{0..23}.json.gz
+
+
+You can upload using Web Console or AWS CLI or boto3. Here are the AWS CLI commands 
+for reference. I will be using CLI on my Mac not on the Docker environment.
+
+aws s3 cp . s3://itv-github/landing/ghactivity/ \
+    --exclude "*" \
+    --include "2021-01-16*" \
+    --recursive \
+    --profile itvgithub
+
+
+[Instructions and Code] Rerun Glue Job using Bookmark
+Let us rerun the Glue job using the Glue Job Bookmark. Here are the steps followed so far.
+We made sure data is cleaned up in the raw zone.
+We have enabled bookmark before running the job to copy the data for 2021-01-13, 
+2021-01-14 and 2021-01-15. Here are the commands to validate the folders as well as files.
+
+
+aws s3 ls s3://itv-github/raw/ghactivity/year=2021/month=01/ \
+    --profile itvgithub
+ 
+aws s3 ls s3://itv-github/raw/ghactivity/year=2021/month=01/ \
+    --recursive \
+    --profile itvgithub
+
+# We have validated that bookmark is enabled and also captured for the prior run.
+
+aws glue get-job-bookmark \
+    --job-name github_json_to_parquet2 \
+    --profile itvgithub
+
+# Now let us run the job again either by using the web console or AWS Glue CLI.
+
+aws glue start-job-run \
+    --job-name github_json_to_parquet2 \
+    --worker-type G.1X \
+    --number-of-workers 10 \
+    --profile itvgithub
+
+# We can check the status either by using Web Console or AWS CLI.
+
+aws glue get-job-run \
+    --job-name github_json_to_parquet2 \
+    --run-id jr_c5fd45ef0677d3160d87b6879bf636f5f8149913ffd609de2b18411f9d8c3b40 \
+    --profile itvgithub
+
+
+[Instructions and Code] Validate Job Bookmark and Files for Incremental run
+Let us validate to ensure that the incremental run is as expected. We will review details 
+such as Glue Job bookmark, files in AWS as well as size.
+
+Run below command and compare with previous output. You will not get direct information 
+related to bookmarks, instead you will only get the metadata. Glue maintains it internally 
+and uses this information to fetch details about last run.
+
+
+aws glue get-job-bookmark \
+        --job-name github_json_to_parquet2 \
+        --profile itvgithub
+
+# Run below commands to see the new folder related to 2021-01-16.
+
+aws s3 ls s3://romadv-itv-github/raw/ghactivity/year=2021/month=01/ \
+    --profile itvgithub
+ 
+aws s3 ls s3://romadv-itv-github/raw/ghactivity/year=2021/month=01/ \
+    --recursive \
+    --profile itvgithub
+
+# We will also check the size of the overall folder s3://itv-github/raw/ghactivity/ 
+# using AWS Web Console.
+
+
+[Instructions and Code] Recrawl the Clue Catalog Table using CLI
+Let us recrawl the Glue Catalog table using Web Console or AWS CLI.
+We should also run queries to ensure that data is copied as expected.
+However, the new partitions added might not be visible for querying using tools like Athena.
+We need to crawl the table to refresh partitions. Before crawling, you can go to 
+the Glue Catalog Table using AWS Web Console and check existing partitions.
+
+# You can also run below AWS CLI command to check the table properties.
+
+aws glue get-table \
+    --database-name itvghrawdb \
+    --name ghactivity \
+    --profile itvgithub
+ 
+aws glue get-partitions \
+    --database-name itvghrawdb \
+    --table-name ghactivity \
+    --profile itvgithub
+
+# You can either crawl using Web Console or Command line.
+
+# Here is the command to crawl so that the table definition is refreshed with the new partition. 
+# You can go to the web console and verify whether the new partition is added or not.
+
+aws glue start-crawler --name "GHActivity Raw Crawler" \
+    --profile itvgithub
+
+
+[Instructions and Code] Run Athena Queries for Data Validation
+Run the same athena queries as earlier and compare the results as 
+well as performance. Make sure to choose the new database itvghrawdb.
+
+When we recrawl the table, we might run into a known issue with Athena. 
+You can refer to this document about the details:
+https://docs.amazonaws.cn/en_us/athena/latest/ug/updates-and-partitions.html
+
+# You can run the below scripts to drop the partitions and add them using Athena.
+
+ALTER TABLE itvghrawdb.ghactivity
+DROP PARTITION (year = '2021', month = '01', day = '16');
+ 
+SHOW PARTITIONS itvghrawdb.ghactivity;
+
+MSCK REPAIR TABLE itvghrawdb.ghactivity;
+
+# Get the number of records from the table.
+
+SELECT count(1) FROM itvghrawdb.ghactivity;
+
+# Get the number of repositories created for each of the 4 days. 
+# Make sure to compare with previous runs to ensure that counts do not change too much.
+
+SELECT substr(created_at, 1, 10), count(1), count(distinct id) 
+FROM itvghrawdb.ghactivity
+WHERE type = 'CreateEvent'
+AND payload.ref_type = 'repository'
+GROUP BY substr(created_at, 1, 10);
+
+
