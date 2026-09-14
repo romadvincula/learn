@@ -8,7 +8,7 @@ def _get_cocktail(ti=None):
 
     api = Variable.get('api')
     # api = "https://www.thecocktaildb.com/api/json/v1/1/random.php"
-    
+        
     response = requests.get(api)
     with open(DATASET_COCKTAIL.uri, "wb") as f:
         f.write(response.content)
